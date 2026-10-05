@@ -1,0 +1,26 @@
+<!-- {"title": "Referencia ABAP: transacciones, BAPIs y tablas", "description": "Buscador de transacciones de desarrollo SAP, módulos de función y BAPIs con su alternativa en ABAP Cloud, y tablas estándar con su vista CDS liberada y sus cambios en S/4HANA.", "out": "herramientas/referencia.html", "nav": "herramientas", "styles": ["css/tool.css"], "scripts": ["js/abap-highlight.js", "js/referencia-data.js", "js/referencia-ui.js"]} -->
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / Referencia</div>
+    <h1>Referencia ABAP</h1>
+    <p>Lo que se busca en Google veinte veces al mes, en un solo sitio: transacciones para desarrolladores, módulos de función y BAPIs con su sustituto en ABAP Cloud, y tablas estándar con su vista CDS liberada y lo que cambia en S/4HANA.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:24px">
+  <div class="wrap">
+    <div class="toolbar" style="padding-top:0">
+      <input type="text" id="ref-search" placeholder="Buscar: SM37, pedido, BAPI_GOODSMVT, MARA, IDoc, Excel..." style="width:380px" autofocus>
+    </div>
+    <div class="panel" style="min-height:0">
+      <div class="tabs" role="tablist">
+        <button class="tab" data-ref="transactions" role="tab">Transacciones<span class="n"></span></button>
+        <button class="tab" data-ref="functions" role="tab">Funciones y BAPIs<span class="n"></span></button>
+        <button class="tab" data-ref="tables" role="tab">Tablas y vistas CDS<span class="n"></span></button>
+      </div>
+      <div style="overflow-x:auto"><table id="ref-table" class="ref-table"></table></div>
+    </div>
+    <p class="small muted" style="margin-top:14px">Los nombres de vistas CDS y BO de RAP corresponden a S/4HANA 2022-2023 y BTP. El estado de liberación puede variar según la versión: compruébalo en ADT (Properties &gt; API State) o en el Cloudification Repository antes de usarlos.</p>
+  </div>
+</section>

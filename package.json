@@ -1,0 +1,23 @@
+{
+  "name": "proyecto-sap-abap",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node web-fuente/build.mjs",
+    "test": "node scripts/tests/test-motor.mjs && node scripts/tests/test-sql.mjs",
+    "enlaces": "node scripts/comprobar-enlaces.mjs",
+    "pdf": "node documentos/generar-pdf.mjs",
+    "graficos": "node marketing/graficos.mjs",
+    "video": "node marketing/video/grabar.mjs",
+    "plantillas": "node biblioteca/scripts/generar-plantillas.mjs",
+    "xml": "node biblioteca/scripts/generar-xml-abapgit.mjs",
+    "empaquetar": "node scripts/empaquetar.mjs",
+    "capturas": "node scripts/capturas.mjs",
+    "probar": "node scripts/probar-web.mjs",
+    "todo": "npm run plantillas && npm run xml && npm test && npm run pdf && npm run build && npm run enlaces && npm run empaquetar && npm run privacidad",
+    "privacidad": "node scripts/comprobar-privacidad.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "^1.63.0"
+  }
+}

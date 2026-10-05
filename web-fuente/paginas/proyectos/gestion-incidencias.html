@@ -1,0 +1,174 @@
+<!-- {"title": "Gestión de Incidencias con RAP", "description": "Caso de estudio: aplicación Fiori de gestión de incidencias construida con ABAP RESTful Application Programming Model (RAP) gestionado, draft, validaciones, determinaciones y acción con parámetro.", "out": "proyectos/gestion-incidencias.html", "nav": "proyectos"} -->
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="{{base}}index.html">Inicio</a> / Proyectos</div>
+    <p class="eyebrow">Caso de estudio · ABAP Cloud</p>
+    <h1>Gestión de Incidencias con RAP</h1>
+    <p class="lead">Aplicación Fiori para registrar incidencias, asignarlas a un responsable y seguir su historial de estados. Proyecto final del Máster SAP ABAP Cloud de Avanzado a Experto, desarrollado en SAP BTP ABAP Environment y versionado con abapGit.</p>
+    <p style="margin-top:20px">
+      <a class="btn" href="https://github.com/abelg02/ABAP_Cloud_AE/tree/main/src/zabap_abel_ae_incident">Ver el código en GitHub</a>
+      <a class="btn btn-secondary" href="#decisiones">Decisiones técnicas</a>
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap project-feature">
+    <div>
+      <h2>El problema</h2>
+      <p>Un equipo de soporte necesita una herramienta sencilla dentro de SAP para dar de alta incidencias, repartirlas y saber en todo momento en qué estado están y quién las ha movido. Las reglas que pedía el enunciado:</p>
+      <ul>
+        <li>Cada incidencia tiene título, descripción, prioridad, fechas y responsable.</li>
+        <li>Al crearla, el número y el estado inicial se asignan solos.</li>
+        <li>El estado cambia mediante una acción, con un comentario, y cada cambio queda en un historial.</li>
+        <li>Solo el responsable o quien la creó puede cambiar el estado.</li>
+        <li>Una incidencia pendiente no puede cerrarse directamente.</li>
+        <li>Solo se pueden borrar incidencias abiertas.</li>
+      </ul>
+      <h2 style="margin-top:32px">Ficha técnica</h2>
+      <dl class="kv">
+        <dt>Plataforma</dt><dd>SAP BTP ABAP Environment (ABAP Cloud)</dd>
+        <dt>Paquete</dt><dd><code>ZABAP_INCT_AGG</code></dd>
+        <dt>Modelo</dt><dd>RAP gestionado, <code>strict ( 2 )</code>, draft, numeración UUID gestionada</dd>
+        <dt>Entidades</dt><dd>Incidencia (raíz) e Historial (hija, por composición)</dd>
+        <dt>Servicio</dt><dd>OData V4 UI, app Fiori Elements List Report + Object Page</dd>
+        <dt>Objetos</dt><dd>4 tablas + 2 draft, 2 dominios, 7 vistas CDS, 2 BDEF, 4 clases, metadata extensions, service definition y binding</dd>
+      </dl>
+    </div>
+    <figure class="figure" style="margin:0">
+      <img src="{{base}}img/arquitectura-rap.svg" alt="Capas del Business Object de incidencias" width="760" height="520">
+      <figcaption>Arquitectura por capas. La interfaz se genera a partir de las anotaciones de las metadata extensions.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Estados y reglas de transición</h2>
+      <p>El estado nunca se edita a mano: el campo es de solo lectura y solo cambia a través de la acción <code>changeStatus</code>, que valida las reglas y escribe el historial.</p>
+    </div>
+    <figure class="figure" style="margin:0">
+      <img src="{{base}}img/estados-incidencia.svg" alt="Estados abiertos (OP, IP, PE) y cerrados (CO, CL, CN) con sus reglas" width="760" height="330">
+    </figure>
+  </div>
+</section>
+
+<section class="section" id="decisiones">
+  <div class="wrap narrow">
+    <h2>Decisiones técnicas</h2>
+
+    <h3>1. Definición de comportamiento: qué hace el framework y qué hago yo</h3>
+    <p>Con RAP gestionado, el framework se encarga de crear, actualizar, borrar, bloquear y guardar. Mi código solo implementa lo que es lógica de negocio. La BDEF declara qué campos son de solo lectura, qué validaciones se lanzan y cuándo.</p>
+<pre class="abap">
+managed implementation in class zbp_r_dt_inct_agg unique;
+strict ( 2 );
+with draft;
+
+define behavior for zr_dt_inct_agg alias Incident
+persistent table zdt_inct_agg
+draft table zdt_d_inct_agg
+lock master
+total etag LastChangedAt
+etag master LocalLastChangedAt
+authorization master ( global, instance )
+{
+  create;
+  update;
+  delete;
+
+  association _History { create ( features : instance ); with draft; }
+
+  field ( readonly ) IncUUID, IncidentID, Status, ChangedDate,
+                     LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy,
+                     LocalLastChangedAt, LastChangedAt;
+  field ( numbering : managed ) IncUUID;
+  field ( mandatory ) Title, Description, Priority;
+
+  action ( features : instance ) changeStatus
+    parameter zdd_change_status_param_agg result [1] $self;
+
+  side effects { action changeStatus affects $self; }
+
+  internal action setHistory;
+
+  determination setDefaultHistory on save   { create; }
+  determination setDefaultValues  on modify { create; }
+
+  validation validateMandatoryFields on save { create; update; }
+  validation validateDates           on save { field CreationDate, ChangedDate; }
+  validation validateDeleteStatus    on save { delete; }
+  ...
+}
+</pre>
+    <p class="small muted">Extracto sin comentarios; las acciones de draft, el mapping y la entidad de historial están en el repositorio.</p>
+
+    <h3>2. Botón deshabilitado en lugar de mensaje de error</h3>
+    <p>Si una incidencia está cerrada, no tiene sentido dejar pulsar "Cambiar estado" para luego mostrar un error. Con <code>features : instance</code> el botón aparece deshabilitado. El caso delicado es el de una incidencia nueva que todavía es solo un borrador: no existe en la tabla activa y tampoco debe poder cambiar de estado. Para distinguirla, se comprueba si el UUID del borrador ya tiene registro activo:</p>
+<pre class="abap">
+result = VALUE #( FOR incident IN incidents
+  LET is_closed = xsdbool(    incident-Status = 'CO'
+                           OR incident-Status = 'CL'
+                           OR incident-Status = 'CN' )
+      is_new    = xsdbool( incident-%is_draft = if_abap_behv=>mk-on
+                           AND NOT line_exists( lt_active[ inc_uuid = incident-IncUUID ] ) )
+  IN
+  ( %tky                 = incident-%tky
+    %action-changeStatus = COND #( WHEN is_closed = abap_true OR is_new = abap_true
+                                   THEN if_abap_behv=>fc-o-disabled
+                                   ELSE if_abap_behv=>fc-o-enabled ) ) ).
+</pre>
+
+    <h3>3. La acción changeStatus: validar, actualizar y dejar rastro</h3>
+    <p>La acción recibe el nuevo estado y un comentario a través de una entidad abstracta. Para cada incidencia aplica las tres reglas de negocio; si alguna falla, la incidencia va a <code>FAILED</code>, el mensaje a <code>REPORTED</code> y se pasa a la siguiente. Si todo es correcto, actualiza el estado con EML y crea la línea de historial por la composición:</p>
+<pre class="abap">
+" Regla de negocio: de Pendiente no se pasa directamente a Completada o Cerrada
+IF incident-Status = 'PE'
+  AND ( key_entry-%param-Status = 'CO' OR key_entry-%param-Status = 'CL' ).
+  APPEND VALUE #( %tky = incident-%tky ) TO failed-incident.
+  APPEND VALUE #( %tky        = incident-%tky
+                  %state_area = 'VALIDATE_STATUS_CHANGE'
+                  %msg        = new_message_with_text(
+                                  severity = if_abap_behv_message=>severity-error
+                                  text     = 'Cannot change status from Pending to Completed or Closed' ) )
+    TO reported-incident.
+  CONTINUE.
+ENDIF.
+
+MODIFY ENTITIES OF zr_dt_inct_agg IN LOCAL MODE
+  ENTITY Incident
+    CREATE BY \_History
+    FIELDS ( HisID PreviousStatus NewStatus Text )
+    WITH VALUE #( ( %tky    = incident-%tky
+                    %target = VALUE #( ( %cid           = |HIST_CS_{ incident-IncUUID }|
+                                         HisID          = next_his_id
+                                         PreviousStatus = incident-Status
+                                         NewStatus      = key_entry-%param-Status
+                                         Text           = key_entry-%param-Text ) ) ) ).
+</pre>
+
+    <h3>4. Validaciones que señalan el campo</h3>
+    <p>Las validaciones de campos obligatorios rellenan <code>%element</code> además del mensaje, así que Fiori marca en rojo el campo concreto. Cada validación usa su propio <code>%state_area</code> para que los mensajes desaparezcan cuando el usuario corrige el dato.</p>
+
+    <h3>5. Valores por defecto al crear</h3>
+    <p>La determinación <code>setDefaultValues</code> asigna el número correlativo, el estado <code>OP</code> y las fechas con <code>cl_abap_context_info=>get_system_date( )</code> (en ABAP Cloud no se usa <code>sy-datum</code>). Al guardar por primera vez, <code>setDefaultHistory</code> crea la primera línea del historial.</p>
+
+    <div class="callout">
+      <strong>Qué cambiaría en un proyecto productivo.</strong> El número de incidencia se calcula con <code>MAX + 1</code>, válido para el ejercicio pero con riesgo de duplicados si dos usuarios crean a la vez. En productivo usaría un objeto de rango de números (<code>cl_numberrange_runtime</code>) en <code>early numbering</code>. También movería los textos de los mensajes a una clase de mensajes para poder traducirlos, y añadiría tests de EML con <code>cl_botd_txbufdbl_bo_test_env</code>.
+    </div>
+
+    <h3>6. Interfaz sin escribir interfaz</h3>
+    <p>La app Fiori no tiene ni una línea de JavaScript. Las metadata extensions definen columnas, filtros, facetas del detalle y los botones de acción (<code>#FOR_ACTION</code> con <code>dataAction: 'changeStatus'</code>), y los value helps de estado y prioridad usan búsqueda difusa con umbral 0.8.</p>
+
+    <h2 style="margin-top:48px">Lo que aprendí</h2>
+    <ul>
+      <li>En RAP, la mayor parte del trabajo está en decidir bien qué va en la BDEF y qué en el código. Una BDEF bien pensada ahorra métodos enteros.</li>
+      <li>Los borradores (draft) cambian cómo hay que razonar: cada lectura puede devolver una instancia activa o un borrador, y hay que contemplar ambos casos.</li>
+      <li>abapGit desde el primer día: el historial de commits es también la documentación de cómo se construyó.</li>
+    </ul>
+
+    <hr>
+    <p><strong>¿Quieres montar algo parecido?</strong> El <a href="{{base}}herramientas/generadores.html#rap">generador de BO RAP</a> te deja el esqueleto listo con draft, validaciones y una acción con parámetro, y la <a href="{{base}}biblioteca.html">plantilla RAP</a> se descarga gratis.</p>
+  </div>
+</section>

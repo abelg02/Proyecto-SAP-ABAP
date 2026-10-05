@@ -1,0 +1,42 @@
+<!-- {"title": "Conversor de Open SQL a sintaxis estricta", "description": "Convierte sentencias SELECT de Open SQL antiguo a la sintaxis estricta de ABAP 7.40+ (variables con @, campos con comas, FIELDS) y avisa de SELECT *, FOR ALL ENTRIES sin comprobar y falta de ORDER BY en HANA.", "out": "herramientas/sql.html", "nav": "herramientas", "styles": ["css/tool.css"], "scripts": ["js/abap-highlight.js", "js/sql-convert.js", "js/sql-ui.js"]} -->
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / Conversor de Open SQL</div>
+    <h1>Conversor de Open SQL a sintaxis estricta</h1>
+    <p>Pega tus SELECT antiguos y obtén la versión con sintaxis estricta: variables con <code>@</code>, campos separados por comas, <code>FIELDS</code> y el <code>INTO</code> al final. Es la sintaxis que exige ABAP Cloud y la que permite usar expresiones SQL. De paso, te avisa de lo que conviene revisar.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:28px">
+  <div class="wrap grid grid-2" style="align-items:start">
+    <div class="card form" style="min-width:0">
+      <div style="display:flex;justify-content:space-between;align-items:end;gap:10px">
+        <label for="sql-in" style="margin:0">SQL antiguo</label>
+        <button class="btn btn-secondary btn-small" id="sql-example" type="button">Ejemplo</button>
+      </div>
+      <textarea id="sql-in" spellcheck="false" style="min-height:420px;font-family:var(--mono);font-size:12.5px"></textarea>
+      <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" id="sql-inline" style="width:auto"> Usar declaración en línea en el destino (<code>@DATA(lt_...)</code>)</label>
+    </div>
+    <div style="min-width:0">
+      <div class="code-window">
+        <div class="bar"><span>Sintaxis estricta (7.40 SP05+)</span><button class="btn btn-secondary btn-small" id="sql-copy" type="button">Copiar todo</button></div>
+        <div id="sql-out" class="sql-out"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap narrow">
+    <h2>Cómo decide qué es una variable</h2>
+    <p>En la sintaxis antigua, <code>WHERE matnr = lv_matnr</code> no indica si <code>lv_matnr</code> es una columna o una variable ABAP. El conversor añade <code>@</code> cuando:</p>
+    <ul>
+      <li>El nombre sigue las convenciones habituales: <code>lv_</code>, <code>ls_</code>, <code>lt_</code>, <code>gv_</code>, <code>p_</code>, <code>s_</code>, <code>iv_</code>, <code>is_</code>, <code>wa_</code>, <code>it_</code>, field-symbols y <code>sy-</code>.</li>
+      <li>Es un componente de estructura (<code>ls_item-matnr</code>) a la derecha de una comparación.</li>
+      <li>Es <code>space</code>, <code>abap_true</code> o <code>abap_false</code>.</li>
+    </ul>
+    <p>Si encuentra un nombre que no sabe clasificar, lo deja como está y te avisa para que lo revises. Es preferible a equivocarse en silencio.</p>
+    <div class="callout">Para revisar el programa completo (no solo el SQL), pégalo en <a href="cleancore-check.html">CleanCore Check</a>.</div>
+  </div>
+</section>

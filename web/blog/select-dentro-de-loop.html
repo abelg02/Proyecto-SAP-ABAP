@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El SELECT dentro del LOOP: cómo encontrarlo y tres formas de quitarlo · Abel González Guerra</title>
+<meta name="description" content="Por qué un SELECT dentro de un LOOP hunde el rendimiento de un programa ABAP y cómo sustituirlo por FOR ALL ENTRIES, JOIN o una vista CDS, con ejemplos.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="El SELECT dentro del LOOP: cómo encontrarlo y tres formas de quitarlo · Abel González Guerra">
+<meta property="og:description" content="Por qué un SELECT dentro de un LOOP hunde el rendimiento de un programa ABAP y cómo sustituirlo por FOR ALL ENTRIES, JOIN o una vista CDS, con ejemplos.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html" class="active" aria-current="page">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Blog</a> / Rendimiento</div>
+    <h1 style="max-width:820px">El SELECT dentro del LOOP: cómo encontrarlo y tres formas de quitarlo</h1>
+    <p class="article-meta">Abel González Guerra · 9 min de lectura</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px">
+  <div class="wrap article">
+    <p>Si tuviera que elegir un único problema de rendimiento para buscar en un sistema SAP con años de desarrollos Z, sería este. Es fácil de escribir, funciona perfectamente en desarrollo con diez registros y se vuelve un problema serio en productivo con cincuenta mil.</p>
+
+<pre class="abap"><code><span class="k">LOOP</span> <span class="k">AT</span> lt_items <span class="k">INTO</span> <span class="k">DATA</span>(ls_item).
+  <span class="k">SELECT</span> <span class="k">SINGLE</span> maktx <span class="k">FROM</span> makt
+    <span class="k">WHERE</span> matnr = @ls_item-matnr
+      <span class="k">AND</span> spras = @sy-langu
+    <span class="k">INTO</span> @ls_item-maktx.
+  <span class="k">MODIFY</span> lt_items <span class="k">FROM</span> ls_item.
+<span class="k">ENDLOOP</span>.</code></pre>
+
+    <h2>Por qué es tan caro</h2>
+    <p>Cada <code>SELECT</code> es un viaje de ida y vuelta entre el servidor de aplicación y la base de datos. Aunque la consulta en sí tarde muy poco (MAKT tiene índice por material e idioma), el coste fijo de cada viaje se multiplica por el número de vueltas del bucle. Con 20.000 posiciones son 20.000 consultas para obtener datos que la base de datos podría devolver en una sola.</p>
+    <p>En HANA el efecto es todavía mayor: la base de datos es muy rápida procesando conjuntos grandes y comparativamente lenta atendiendo muchas peticiones pequeñas. Es justo lo contrario de lo que hace este código.</p>
+
+    <h2>Cómo encontrarlo</h2>
+    <ul>
+      <li><strong>SQL trace (ST05).</strong> Activas el trace, ejecutas el programa y en el resumen de sentencias idénticas aparece la misma SELECT ejecutada miles de veces.</li>
+      <li><strong>ATC / Code Inspector.</strong> La comprobación de rendimiento "SELECT en bucles" lo detecta de forma estática, también cuando la SELECT está en un método llamado desde el bucle (aunque no siempre).</li>
+      <li><strong>Lectura del código.</strong> Busca <code>SELECT</code> entre un <code>LOOP</code> y su <code>ENDLOOP</code>, y también <code>SELECT ... ENDSELECT</code> anidados, que son lo mismo con otra forma. <a href="../herramientas/cleancore-check.html?ejemplo=legacy">CleanCore Check</a> lo marca como error con la regla PERF-001.</li>
+    </ul>
+
+    <h2>Opción 1: FOR ALL ENTRIES</h2>
+    <p>Es la sustitución más directa y funciona en cualquier versión. Se leen todos los textos de una vez y luego se buscan en memoria:</p>
+<pre class="abap"><code><span class="k">TYPES</span>: <span class="k">BEGIN</span> <span class="k">OF</span> ty_text,
+         matnr <span class="k">TYPE</span> matnr,
+         maktx <span class="k">TYPE</span> maktx,
+       <span class="k">END</span> <span class="k">OF</span> ty_text.
+<span class="k">DATA</span> lt_texts <span class="k">TYPE</span> <span class="k">HASHED</span> <span class="k">TABLE</span> <span class="k">OF</span> ty_text <span class="k">WITH</span> <span class="k">UNIQUE</span> <span class="k">KEY</span> matnr.
+
+<span class="k">IF</span> lt_items <span class="k">IS</span> <span class="k">NOT</span> <span class="k">INITIAL</span>.
+  <span class="k">SELECT</span> <span class="k">FROM</span> makt
+    <span class="k">FIELDS</span> matnr, maktx
+    <span class="k">FOR</span> <span class="k">ALL</span> <span class="k">ENTRIES</span> <span class="k">IN</span> @lt_items
+    <span class="k">WHERE</span> matnr = @lt_items-matnr
+      <span class="k">AND</span> spras = @sy-langu
+    <span class="k">INTO</span> <span class="k">TABLE</span> @lt_texts.
+<span class="k">ENDIF</span>.
+
+<span class="k">LOOP</span> <span class="k">AT</span> lt_items <span class="k">ASSIGNING</span> <span class="k">FIELD-SYMBOL</span>(&lt;ls_item&gt;).
+  &lt;ls_item&gt;-maktx = <span class="k">VALUE</span> #( lt_texts[ matnr = &lt;ls_item&gt;-matnr ]-maktx <span class="k">OPTIONAL</span> ).
+<span class="k">ENDLOOP</span>.</code></pre>
+    <p>Tres detalles que marcan la diferencia:</p>
+    <ul>
+      <li><strong>El <code>IF lt_items IS NOT INITIAL</code> es obligatorio.</strong> Si la tabla está vacía, FOR ALL ENTRIES ignora la condición y lee la tabla entera. Es de los errores más caros que se pueden ver en productivo.</li>
+      <li><strong>La tabla de destino es HASHED.</strong> Buscar en una tabla STANDARD dentro del bucle es otra vez coste cuadrático, solo que en memoria. Con HASHED cada búsqueda es inmediata.</li>
+      <li><strong><code>ASSIGNING</code> en lugar de <code>INTO</code> + <code>MODIFY</code>.</strong> Se modifica la línea directamente, sin copiarla dos veces.</li>
+    </ul>
+    <p>FOR ALL ENTRIES elimina duplicados del resultado y el kernel lo divide en bloques, así que no es gratis: con tablas de entrada enormes conviene quitar duplicados antes (<code>SORT</code> + <code>DELETE ADJACENT DUPLICATES</code>).</p>
+
+    <h2>Opción 2: un JOIN</h2>
+    <p>Si los datos del bucle salen a su vez de una SELECT, lo más eficiente es que la base de datos haga el cruce y devuelva el resultado ya montado:</p>
+<pre class="abap"><code><span class="k">SELECT</span> <span class="k">FROM</span> ekpo <span class="k">AS</span> p
+  <span class="k">LEFT</span> <span class="k">OUTER</span> <span class="k">JOIN</span> makt <span class="k">AS</span> t
+    <span class="k">ON</span>  t~matnr = p~matnr
+    <span class="k">AND</span> t~spras = @sy-langu
+  <span class="k">FIELDS</span> p~ebeln, p~ebelp, p~matnr, t~maktx, p~menge
+  <span class="k">WHERE</span> p~ebeln <span class="k">IN</span> @s_ebeln
+  <span class="k">INTO</span> <span class="k">TABLE</span> @<span class="k">DATA</span>(lt_items).</code></pre>
+    <p>El <code>LEFT OUTER JOIN</code> es importante: con un <code>INNER JOIN</code>, las posiciones sin texto en el idioma de conexión desaparecerían del resultado, que no es lo que hacía el código original.</p>
+
+    <h2>Opción 3: una vista CDS</h2>
+    <p>Cuando el mismo cruce se usa en varios programas, o el desarrollo va a S/4HANA, lo natural es llevarlo a una vista CDS. En ABAP Cloud, además, se construye sobre vistas liberadas en lugar de sobre tablas:</p>
+<pre class="abap"><code><span class="k">define</span> <span class="k">view</span> <span class="k">entity</span> ZI_PurchaseOrderItemText
+  <span class="k">as</span> <span class="k">select</span> <span class="k">from</span> I_PurchaseOrderItemAPI01 <span class="k">as</span> Item
+  <span class="k">association</span> [<span class="n">0</span>..<span class="n">1</span>] <span class="k">to</span> I_ProductDescription <span class="k">as</span> _Text
+    <span class="k">on</span>  _Text.Product  = $<span class="k">projection</span>.Material
+    <span class="k">and</span> _Text.Language = $session.system_language
+{
+  <span class="k">key</span> Item.PurchaseOrder,
+  <span class="k">key</span> Item.PurchaseOrderItem,
+      Item.Material,
+      _Text.ProductDescription,
+      Item.OrderQuantity,
+      Item.PurchaseOrderQuantityUnit
+}</code></pre>
+    <p>El programa queda en una SELECT de una línea y la lógica del cruce está en un único sitio, reutilizable desde ABAP, desde un servicio OData o desde una app analítica.</p>
+
+    <h2>¿Cuál elegir?</h2>
+    <table>
+      <thead><tr><th>Situación</th><th>Opción</th></tr></thead>
+      <tbody>
+        <tr><td>Los datos del bucle vienen de un fichero, una BAPI o una pantalla</td><td>FOR ALL ENTRIES</td></tr>
+        <tr><td>Los datos del bucle vienen de otra SELECT</td><td>JOIN</td></tr>
+        <tr><td>El cruce se repite en varios desarrollos o el destino es S/4HANA / ABAP Cloud</td><td>Vista CDS</td></tr>
+        <tr><td>Son tres vueltas de bucle y siempre lo serán</td><td>Déjalo, pero coméntalo</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Cuándo no merece la pena</h2>
+    <p>Si el bucle recorre una tabla que por definición tiene pocas líneas (las sociedades de un grupo, los centros de un país) y la tabla leída está en buffer, la ganancia es despreciable y el código original se lee mejor. La regla no es "nunca un SELECT en un bucle", sino "nunca sin saber cuántas vueltas va a dar en productivo".</p>
+
+    <div class="callout">Si tienes un report con este problema y quieres una segunda opinión, pásalo por <a href="../herramientas/cleancore-check.html">CleanCore Check</a>. Te marca cada SELECT en bucle con su línea.</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script src="../js/site.js"></script>
+</body>
+</html>

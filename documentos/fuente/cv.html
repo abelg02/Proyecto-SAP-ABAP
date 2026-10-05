@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>CV Abel González Guerra - SAP ABAP</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Public Sans", Arial, sans-serif; color: #1c2530; font-size: 9.2pt; line-height: 1.45; }
+  em, i { font-style: normal; }
+  .page { width: 210mm; height: 297mm; padding: 14mm 15mm 12mm; display: grid; grid-template-columns: 1fr 62mm; gap: 9mm; grid-template-rows: auto 1fr; }
+  header { grid-column: 1 / -1; border-bottom: 2px solid #15202b; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; }
+  h1 { font-size: 21pt; margin: 0; letter-spacing: -0.015em; line-height: 1.1; }
+  .role { font-size: 11pt; color: #0a5cad; font-weight: 600; margin-top: 3px; }
+  .contact { text-align: right; font-size: 8.6pt; color: #4a5665; line-height: 1.55; }
+  h2 { font-size: 8.4pt; text-transform: uppercase; letter-spacing: .08em; color: #5b6675; margin: 14px 0 6px; padding-bottom: 3px; border-bottom: 1px solid #dde2e8; }
+  .main h2:first-child, .side h2:first-child { margin-top: 0; }
+  p { margin: 0 0 6px; }
+  .item { margin-bottom: 10px; }
+  .item-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .item-title { font-weight: 700; font-size: 9.8pt; }
+  .item-meta { font-size: 8.2pt; color: #6b7685; white-space: nowrap; }
+  .item-sub { font-size: 8.6pt; color: #4a5665; margin-bottom: 3px; }
+  ul { margin: 2px 0 0; padding-left: 13px; }
+  li { margin-bottom: 2px; }
+  code { font-family: "JetBrains Mono", monospace; font-size: 8pt; font-variant-ligatures: none; }
+  .side { font-size: 8.6pt; }
+  .skill { margin-bottom: 7px; }
+  .skill b { display: block; font-size: 8.8pt; }
+  .skill span { color: #4a5665; }
+  .cert { border-left: 2px solid #0a5cad; padding-left: 7px; margin-bottom: 8px; }
+  .cert b { display: block; }
+  .cert span { color: #6b7685; font-size: 8pt; }
+</style>
+</head>
+<body>
+<section class="page">
+  <header>
+    <div>
+      <h1>Abel González Guerra</h1>
+      <div class="role">Desarrollador SAP ABAP · ABAP Cloud, RAP y CDS</div>
+    </div>
+    <div class="contact">
+      github.com/abelg02<br>
+      ABAP Cloud · RAP · CDS · S/4HANA
+    </div>
+  </header>
+
+  <div class="main">
+    <h2>Perfil</h2>
+    <p>Desarrollador ABAP formado en el modelo de programación actual de SAP: ABAP Cloud, RAP, CDS y extensibilidad clean core para S/4HANA, con base sólida en ABAP clásico (POO, tablas internas, ABAP SQL, rendimiento). 650 horas de formación certificada con Logali Group y un Business Object RAP completo publicado en GitHub. Me interesa el código claro, revisado con ATC y documentado.</p>
+
+    <h2>Proyectos</h2>
+    <div class="item">
+      <div class="item-head"><span class="item-title">Gestión de Incidencias con RAP</span><span class="item-meta">2026 · BTP ABAP Environment</span></div>
+      <div class="item-sub">Proyecto final del Máster ABAP Cloud de Avanzado a Experto · github.com/abelg02/ABAP_Cloud_AE</div>
+      <ul>
+        <li>Business Object gestionado con draft: entidad raíz y composición de historial, numeración UUID gestionada, ETag y bloqueo total.</li>
+        <li>Acción <code>changeStatus</code> con parámetro, autorización por responsable o creador, reglas de transición y registro en historial con EML.</li>
+        <li>Habilitación dinámica del botón con <code>features : instance</code>, distinguiendo borradores nuevos de instancias activas.</li>
+        <li>Determinaciones de valores por defecto y validaciones con <code>%element</code> y <code>%state_area</code>; app Fiori Elements (OData V4) con metadata extensions y value helps.</li>
+      </ul>
+    </div>
+    <div class="item">
+      <div class="item-head"><span class="item-title">ABAP Toolkit</span><span class="item-meta">2026 · código abierto</span></div>
+      <div class="item-sub">Biblioteca gratuita de clases reutilizables (MIT), en formato abapGit</div>
+      <ul>
+        <li>Paquete ABAP Cloud solo con APIs liberadas: application log (<code>CL_BALI</code>), email (<code>CL_BCS_MAIL_MESSAGE</code>), cliente REST, JSON, mensajes RAP, rangos de números, con tests ABAP Unit.</li>
+        <li>Paquete clásico: ALV con <code>CL_SALV_TABLE</code>, BAPIRET2 y commit, ficheros CSV y Excel, textos largos, jobs en fondo, SLG1.</li>
+        <li>Plantilla de BO RAP gestionado con draft (9 objetos) y generador web que la rellena.</li>
+      </ul>
+    </div>
+    <div class="item">
+      <div class="item-head"><span class="item-title">Herramientas web para desarrolladores ABAP</span><span class="item-meta">2026 · gratuitas</span></div>
+      <div class="item-sub">Aplicaciones que funcionan en el navegador, sin servidor</div>
+      <ul>
+        <li>CleanCore Check: 72 reglas para 6 sistemas destino (ECC 7.0x a BTP): compatibilidad de versión, simplificación de S/4HANA, ABAP Cloud, rendimiento y seguridad, con corrección automática adaptada a la versión.</li>
+        <li>Explicador de dumps ST22, conversor de Open SQL a sintaxis estricta, formateador ABAP, referencia de transacciones, BAPIs y vistas CDS liberadas.</li>
+        <li>Generadores de BO RAP con draft, report ALV, tests ABAP Unit y clases de excepción T100.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <aside class="side">
+    <h2>Formación</h2>
+    <div class="cert"><b>Máster SAP ABAP Cloud: de Avanzado a Experto</b><span>Logali Group · 300 h · junio 2026</span></div>
+    <div class="cert"><b>Máster SAP ABAP Cloud I: de cero a avanzado</b><span>Logali Group · 300 h · enero 2026</span></div>
+    <div class="cert"><b>SAP ABAP: iniciación a la programación</b><span>Logali Group · 50 h · enero 2026</span></div>
+
+    <h2>Conocimientos</h2>
+    <div class="skill"><b>RAP</b><span>Managed y unmanaged, draft, BDL, BIL, EML, acciones, determinaciones, validaciones, autorizaciones, side effects</span></div>
+    <div class="skill"><b>CDS</b><span>Interfaz y consumo, asociaciones, composiciones, analíticas, access control (DCL), metadata extensions, table functions</span></div>
+    <div class="skill"><b>ABAP</b><span>POO, excepciones, patrones de diseño, ABAP Unit y test doubles, expresiones de constructor, ABAP SQL, push-down</span></div>
+    <div class="skill"><b>S/4HANA</b><span>Clean core, extensibilidad Cloud y Private Edition, extensiones RAP y BAdI, side-by-side en BTP</span></div>
+    <div class="skill"><b>ABAP clásico</b><span>ALV (SALV), BAPIs, jobs, application log, ficheros, diccionario de datos</span></div>
+    <div class="skill"><b>Herramientas</b><span>ADT (Eclipse), abapGit, ATC, depurador, SQL trace, Git</span></div>
+    <div class="skill"><b>Otros</b><span>JavaScript, HTML/CSS, Node.js</span></div>
+
+    <h2>Idiomas</h2>
+    <p>Español: nativo</p>
+  </aside>
+</section>
+</body>
+</html>

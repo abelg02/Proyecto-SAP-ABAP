@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explicador de dumps ST22 · Abel González Guerra</title>
+<meta name="description" content="Pega un dump de la ST22 y entiende qué ha pasado: significado del error de ejecución, causas habituales, cómo analizarlo y la corrección típica en código ABAP.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Explicador de dumps ST22 · Abel González Guerra">
+<meta property="og:description" content="Pega un dump de la ST22 y entiende qué ha pasado: significado del error de ejecución, causas habituales, cómo analizarlo y la corrección típica en código ABAP.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/tool.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html" class="active" aria-current="page">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / Explicador de dumps</div>
+    <h1>Explicador de dumps ST22</h1>
+    <p>Pega el texto del dump (o solo el nombre del error, como <code>TIME_OUT</code>). Te explica qué ha pasado, las causas más habituales, cómo analizarlo y cómo se corrige en código. Funciona con dumps en español y en inglés.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:28px">
+  <div class="wrap grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:start">
+    <div class="card form">
+      <div style="display:flex;justify-content:space-between;align-items:end;gap:10px">
+        <label for="dump-in" style="margin:0">Texto del dump</label>
+        <button class="btn btn-secondary btn-small" id="dump-example" type="button">Ejemplo</button>
+      </div>
+      <textarea id="dump-in" spellcheck="false" style="min-height:320px;font-family:var(--mono);font-size:12.5px" placeholder="Runtime Errors   TSV_TNEW_PAGE_ALLOC_FAILED&#10;...&#10;&#10;o en español:&#10;Error tiempo ejec.   TSV_TNEW_PAGE_ALLOC_FAILED"></textarea>
+      <p class="form-note">En la ST22, abre el dump y copia desde el principio hasta "Information on where terminated" / "Información sobre el lugar de terminación". El texto no sale de tu navegador.</p>
+    </div>
+    <div id="dump-result" class="panel" style="min-height:0;padding:0"></div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Todos los errores</h2>
+      <p>Los errores de ejecución más frecuentes en sistemas SAP, agrupados por tipo.</p>
+    </div>
+    <div class="toolbar" style="padding-top:0">
+      <input type="text" id="dump-search" placeholder="Buscar: memoria, CX_SY_ZERODIVIDE, duplicado..." style="width:340px">
+      <span class="small muted" id="dump-count"></span>
+    </div>
+    <div class="panel" style="min-height:0" id="dump-list"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap narrow">
+    <h2>Cómo leer un dump sin perderse</h2>
+    <ol>
+      <li><strong>Runtime Error / Error tiempo de ejecución</strong>: el nombre del error. Es lo primero que hay que buscar.</li>
+      <li><strong>Exception / Excepción</strong>: si aparece una clase CX_..., el error se podría haber capturado con TRY ... CATCH.</li>
+      <li><strong>What happened / Qué ha sucedido</strong> y <strong>Error analysis / Análisis de errores</strong>: el detalle con valores concretos (la tabla, el campo, el valor que no se pudo convertir).</li>
+      <li><strong>Information on where terminated</strong>: programa, include y línea. Con doble clic en ST22 se abre el código en ese punto.</li>
+      <li><strong>Active calls / Llamadas activas</strong>: la pila. Lee de abajo arriba para ver el camino que llevó al error.</li>
+      <li><strong>Chosen variables / Variables seleccionadas</strong>: el valor de las variables en el momento del error. Muchas veces basta con esto.</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/abap-highlight.js"></script>
+<script src="../js/dumps-data.js"></script>
+<script src="../js/dumps-ui.js"></script>
+<script src="../js/site.js"></script>
+</body>
+</html>

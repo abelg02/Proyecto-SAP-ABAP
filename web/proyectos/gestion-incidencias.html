@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestión de Incidencias con RAP · Abel González Guerra</title>
+<meta name="description" content="Caso de estudio: aplicación Fiori de gestión de incidencias construida con ABAP RESTful Application Programming Model (RAP) gestionado, draft, validaciones, determinaciones y acción con parámetro.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gestión de Incidencias con RAP · Abel González Guerra">
+<meta property="og:description" content="Caso de estudio: aplicación Fiori de gestión de incidencias construida con ABAP RESTful Application Programming Model (RAP) gestionado, draft, validaciones, determinaciones y acción con parámetro.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html" class="active" aria-current="page">Proyecto RAP</a>
+        <a href="../blog/index.html">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="../index.html">Inicio</a> / Proyectos</div>
+    <p class="eyebrow">Caso de estudio · ABAP Cloud</p>
+    <h1>Gestión de Incidencias con RAP</h1>
+    <p class="lead">Aplicación Fiori para registrar incidencias, asignarlas a un responsable y seguir su historial de estados. Proyecto final del Máster SAP ABAP Cloud de Avanzado a Experto, desarrollado en SAP BTP ABAP Environment y versionado con abapGit.</p>
+    <p style="margin-top:20px">
+      <a class="btn" href="https://github.com/abelg02/ABAP_Cloud_AE/tree/main/src/zabap_abel_ae_incident">Ver el código en GitHub</a>
+      <a class="btn btn-secondary" href="#decisiones">Decisiones técnicas</a>
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap project-feature">
+    <div>
+      <h2>El problema</h2>
+      <p>Un equipo de soporte necesita una herramienta sencilla dentro de SAP para dar de alta incidencias, repartirlas y saber en todo momento en qué estado están y quién las ha movido. Las reglas que pedía el enunciado:</p>
+      <ul>
+        <li>Cada incidencia tiene título, descripción, prioridad, fechas y responsable.</li>
+        <li>Al crearla, el número y el estado inicial se asignan solos.</li>
+        <li>El estado cambia mediante una acción, con un comentario, y cada cambio queda en un historial.</li>
+        <li>Solo el responsable o quien la creó puede cambiar el estado.</li>
+        <li>Una incidencia pendiente no puede cerrarse directamente.</li>
+        <li>Solo se pueden borrar incidencias abiertas.</li>
+      </ul>
+      <h2 style="margin-top:32px">Ficha técnica</h2>
+      <dl class="kv">
+        <dt>Plataforma</dt><dd>SAP BTP ABAP Environment (ABAP Cloud)</dd>
+        <dt>Paquete</dt><dd><code>ZABAP_INCT_AGG</code></dd>
+        <dt>Modelo</dt><dd>RAP gestionado, <code>strict ( 2 )</code>, draft, numeración UUID gestionada</dd>
+        <dt>Entidades</dt><dd>Incidencia (raíz) e Historial (hija, por composición)</dd>
+        <dt>Servicio</dt><dd>OData V4 UI, app Fiori Elements List Report + Object Page</dd>
+        <dt>Objetos</dt><dd>4 tablas + 2 draft, 2 dominios, 7 vistas CDS, 2 BDEF, 4 clases, metadata extensions, service definition y binding</dd>
+      </dl>
+    </div>
+    <figure class="figure" style="margin:0">
+      <img src="../img/arquitectura-rap.svg" alt="Capas del Business Object de incidencias" width="760" height="520">
+      <figcaption>Arquitectura por capas. La interfaz se genera a partir de las anotaciones de las metadata extensions.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Estados y reglas de transición</h2>
+      <p>El estado nunca se edita a mano: el campo es de solo lectura y solo cambia a través de la acción <code>changeStatus</code>, que valida las reglas y escribe el historial.</p>
+    </div>
+    <figure class="figure" style="margin:0">
+      <img src="../img/estados-incidencia.svg" alt="Estados abiertos (OP, IP, PE) y cerrados (CO, CL, CN) con sus reglas" width="760" height="330">
+    </figure>
+  </div>
+</section>
+
+<section class="section" id="decisiones">
+  <div class="wrap narrow">
+    <h2>Decisiones técnicas</h2>
+
+    <h3>1. Definición de comportamiento: qué hace el framework y qué hago yo</h3>
+    <p>Con RAP gestionado, el framework se encarga de crear, actualizar, borrar, bloquear y guardar. Mi código solo implementa lo que es lógica de negocio. La BDEF declara qué campos son de solo lectura, qué validaciones se lanzan y cuándo.</p>
+<pre class="abap"><code><span class="k">managed</span> <span class="k">implementation</span> <span class="k">in</span> <span class="k">class</span> zbp_r_dt_inct_agg <span class="k">unique</span>;
+<span class="k">strict</span> ( <span class="n">2</span> );
+<span class="k">with</span> <span class="k">draft</span>;
+
+<span class="k">define</span> behavior <span class="k">for</span> zr_dt_inct_agg <span class="k">alias</span> Incident
+<span class="k">persistent</span> <span class="k">table</span> zdt_inct_agg
+<span class="k">draft</span> <span class="k">table</span> zdt_d_inct_agg
+lock master
+total etag LastChangedAt
+etag master LocalLastChangedAt
+authorization master ( global, instance )
+{
+  <span class="k">create</span>;
+  <span class="k">update</span>;
+  <span class="k">delete</span>;
+
+  <span class="k">association</span> _History { <span class="k">create</span> ( <span class="k">features</span> : instance ); <span class="k">with</span> <span class="k">draft</span>; }
+
+  <span class="k">field</span> ( readonly ) IncUUID, IncidentID, Status, ChangedDate,
+                     LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy,
+                     LocalLastChangedAt, LastChangedAt;
+  <span class="k">field</span> ( <span class="k">numbering</span> : <span class="k">managed</span> ) IncUUID;
+  <span class="k">field</span> ( mandatory ) Title, Description, Priority;
+
+  <span class="k">action</span> ( <span class="k">features</span> : instance ) changeStatus
+    <span class="k">parameter</span> zdd_change_status_param_agg <span class="k">result</span> [<span class="n">1</span>] $self;
+
+  side effects { <span class="k">action</span> changeStatus affects $self; }
+
+  internal <span class="k">action</span> setHistory;
+
+  <span class="k">determination</span> setDefaultHistory <span class="k">on</span> save   { <span class="k">create</span>; }
+  <span class="k">determination</span> setDefaultValues  <span class="k">on</span> <span class="k">modify</span> { <span class="k">create</span>; }
+
+  <span class="k">validation</span> validateMandatoryFields <span class="k">on</span> save { <span class="k">create</span>; <span class="k">update</span>; }
+  <span class="k">validation</span> validateDates           <span class="k">on</span> save { <span class="k">field</span> CreationDate, ChangedDate; }
+  <span class="k">validation</span> validateDeleteStatus    <span class="k">on</span> save { <span class="k">delete</span>; }
+  ...
+}</code></pre>
+    <p class="small muted">Extracto sin comentarios; las acciones de draft, el mapping y la entidad de historial están en el repositorio.</p>
+
+    <h3>2. Botón deshabilitado en lugar de mensaje de error</h3>
+    <p>Si una incidencia está cerrada, no tiene sentido dejar pulsar "Cambiar estado" para luego mostrar un error. Con <code>features : instance</code> el botón aparece deshabilitado. El caso delicado es el de una incidencia nueva que todavía es solo un borrador: no existe en la tabla activa y tampoco debe poder cambiar de estado. Para distinguirla, se comprueba si el UUID del borrador ya tiene registro activo:</p>
+<pre class="abap"><code><span class="k">result</span> = <span class="k">VALUE</span> #( <span class="k">FOR</span> incident <span class="k">IN</span> incidents
+  <span class="k">LET</span> is_closed = <span class="k">xsdbool</span>(    incident-Status = <span class="s">'CO'</span>
+                           <span class="k">OR</span> incident-Status = <span class="s">'CL'</span>
+                           <span class="k">OR</span> incident-Status = <span class="s">'CN'</span> )
+      is_new    = <span class="k">xsdbool</span>( incident-%is_draft = if_abap_behv=&gt;mk-on
+                           <span class="k">AND</span> <span class="k">NOT</span> line_exists( lt_active[ inc_uuid = incident-IncUUID ] ) )
+  <span class="k">IN</span>
+  ( %tky                 = incident-%tky
+    %action-changeStatus = <span class="k">COND</span> #( <span class="k">WHEN</span> is_closed = <span class="k">abap_true</span> <span class="k">OR</span> is_new = <span class="k">abap_true</span>
+                                   <span class="k">THEN</span> if_abap_behv=&gt;fc-o-disabled
+                                   <span class="k">ELSE</span> if_abap_behv=&gt;fc-o-enabled ) ) ).</code></pre>
+
+    <h3>3. La acción changeStatus: validar, actualizar y dejar rastro</h3>
+    <p>La acción recibe el nuevo estado y un comentario a través de una entidad abstracta. Para cada incidencia aplica las tres reglas de negocio; si alguna falla, la incidencia va a <code>FAILED</code>, el mensaje a <code>REPORTED</code> y se pasa a la siguiente. Si todo es correcto, actualiza el estado con EML y crea la línea de historial por la composición:</p>
+<pre class="abap"><code><span class="c">" Regla de negocio: de Pendiente no se pasa directamente a Completada o Cerrada</span>
+<span class="k">IF</span> incident-Status = <span class="s">'PE'</span>
+  <span class="k">AND</span> ( key_entry-%param-Status = <span class="s">'CO'</span> <span class="k">OR</span> key_entry-%param-Status = <span class="s">'CL'</span> ).
+  <span class="k">APPEND</span> <span class="k">VALUE</span> #( %tky = incident-%tky ) <span class="k">TO</span> failed-incident.
+  <span class="k">APPEND</span> <span class="k">VALUE</span> #( %tky        = incident-%tky
+                  %state_area = <span class="s">'VALIDATE_STATUS_CHANGE'</span>
+                  %msg        = new_message_with_text(
+                                  severity = if_abap_behv_message=&gt;severity-error
+                                  text     = <span class="s">'Cannot change status from Pending to Completed or Closed'</span> ) )
+    <span class="k">TO</span> reported-incident.
+  <span class="k">CONTINUE</span>.
+<span class="k">ENDIF</span>.
+
+<span class="k">MODIFY</span> <span class="k">ENTITIES</span> <span class="k">OF</span> zr_dt_inct_agg <span class="k">IN</span> <span class="k">LOCAL</span> <span class="k">MODE</span>
+  <span class="k">ENTITY</span> Incident
+    <span class="k">CREATE</span> <span class="k">BY</span> \_History
+    <span class="k">FIELDS</span> ( HisID PreviousStatus NewStatus Text )
+    <span class="k">WITH</span> <span class="k">VALUE</span> #( ( %tky    = incident-%tky
+                    %target = <span class="k">VALUE</span> #( ( %cid           = <span class="s">|HIST_CS_{ incident-IncUUID }|</span>
+                                         HisID          = next_his_id
+                                         PreviousStatus = incident-Status
+                                         NewStatus      = key_entry-%param-Status
+                                         Text           = key_entry-%param-Text ) ) ) ).</code></pre>
+
+    <h3>4. Validaciones que señalan el campo</h3>
+    <p>Las validaciones de campos obligatorios rellenan <code>%element</code> además del mensaje, así que Fiori marca en rojo el campo concreto. Cada validación usa su propio <code>%state_area</code> para que los mensajes desaparezcan cuando el usuario corrige el dato.</p>
+
+    <h3>5. Valores por defecto al crear</h3>
+    <p>La determinación <code>setDefaultValues</code> asigna el número correlativo, el estado <code>OP</code> y las fechas con <code>cl_abap_context_info=>get_system_date( )</code> (en ABAP Cloud no se usa <code>sy-datum</code>). Al guardar por primera vez, <code>setDefaultHistory</code> crea la primera línea del historial.</p>
+
+    <div class="callout">
+      <strong>Qué cambiaría en un proyecto productivo.</strong> El número de incidencia se calcula con <code>MAX + 1</code>, válido para el ejercicio pero con riesgo de duplicados si dos usuarios crean a la vez. En productivo usaría un objeto de rango de números (<code>cl_numberrange_runtime</code>) en <code>early numbering</code>. También movería los textos de los mensajes a una clase de mensajes para poder traducirlos, y añadiría tests de EML con <code>cl_botd_txbufdbl_bo_test_env</code>.
+    </div>
+
+    <h3>6. Interfaz sin escribir interfaz</h3>
+    <p>La app Fiori no tiene ni una línea de JavaScript. Las metadata extensions definen columnas, filtros, facetas del detalle y los botones de acción (<code>#FOR_ACTION</code> con <code>dataAction: 'changeStatus'</code>), y los value helps de estado y prioridad usan búsqueda difusa con umbral 0.8.</p>
+
+    <h2 style="margin-top:48px">Lo que aprendí</h2>
+    <ul>
+      <li>En RAP, la mayor parte del trabajo está en decidir bien qué va en la BDEF y qué en el código. Una BDEF bien pensada ahorra métodos enteros.</li>
+      <li>Los borradores (draft) cambian cómo hay que razonar: cada lectura puede devolver una instancia activa o un borrador, y hay que contemplar ambos casos.</li>
+      <li>abapGit desde el primer día: el historial de commits es también la documentación de cómo se construyó.</li>
+    </ul>
+
+    <hr>
+    <p><strong>¿Quieres montar algo parecido?</strong> El <a href="../herramientas/generadores.html#rap">generador de BO RAP</a> te deja el esqueleto listo con draft, validaciones y una acción con parámetro, y la <a href="../biblioteca.html">plantilla RAP</a> se descarga gratis.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script src="../js/site.js"></script>
+</body>
+</html>

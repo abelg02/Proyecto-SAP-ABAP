@@ -1,0 +1,23 @@
+@EndUserText.label : 'Solicitud - tabla activa'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table ZDT_REQUEST_AB {
+  key client            : abap.clnt not null;
+  key request_uuid      : sysuuid_x16 not null;
+  request_id             : abap.numc(10);
+  title                 : abap.char(60);
+  description           : abap.string(0);
+  status                : abap.char(2);
+  priority              : abap.char(1);
+  @Semantics.amount.currencyCode : 'ZDT_REQUEST_AB.currency'
+  amount                : abap.curr(15,2);
+  currency              : abap.cuky;
+  due_date              : abap.dats;
+  local_created_by      : abp_creation_user;
+  local_created_at      : abp_creation_tstmpl;
+  local_last_changed_by : abp_locinst_lastchange_user;
+  local_last_changed_at : abp_locinst_lastchange_tstmpl;
+  last_changed_at       : abp_lastchange_tstmpl;
+}

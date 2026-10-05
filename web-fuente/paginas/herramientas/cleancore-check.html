@@ -1,0 +1,102 @@
+<!-- {"title": "CleanCore Check: análisis de código ABAP", "description": "Herramienta gratuita: analiza código ABAP en el navegador para ECC, S/4HANA on-premise, Private Edition, Public Edition y BTP. Compatibilidad, migración a S/4HANA, rendimiento, seguridad y sintaxis obsoleta, con la corrección de cada hallazgo.", "out": "herramientas/cleancore-check.html", "nav": "herramientas", "styles": ["css/tool.css"], "scripts": ["js/abap-highlight.js", "js/cleancore-engine.js", "js/cleancore-ui.js"]} -->
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / CleanCore Check</div>
+    <h1>CleanCore Check</h1>
+    <p>Pega un report, una clase o un include, o abre varios archivos a la vez. Elige el sistema donde va a funcionar y te dice qué no compilará, qué se rompe al migrar a S/4HANA, qué lo hace lento y qué es un riesgo de seguridad, con la corrección de cada caso. Gratis y sin registro. El análisis se hace en tu navegador: el código no se envía a ningún servidor.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="toolbar">
+    <label for="target">Sistema destino</label>
+    <select id="target" style="min-width:300px"></select>
+    <span class="spacer"></span>
+    <span class="small muted"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span></span>
+    <button class="btn btn-small" id="btn-run" type="button">Analizar</button>
+  </div>
+  <p class="small muted" id="target-note" style="margin:-6px 0 12px"></p>
+  <div class="toolbar" style="padding-top:0">
+    <span class="small muted">Ejemplos:</span>
+    <button class="btn btn-secondary btn-small" data-example="legacy" type="button">Report de 2009</button>
+    <button class="btn btn-secondary btn-small" data-example="s4" type="button">Migración a S/4HANA</button>
+    <button class="btn btn-secondary btn-small" data-example="security" type="button">Seguridad</button>
+    <span class="spacer"></span>
+    <button class="btn btn-secondary btn-small" id="btn-file" type="button">Abrir archivos</button>
+    <button class="btn btn-secondary btn-small" id="btn-clear" type="button">Limpiar</button>
+    <input type="file" id="file" accept=".abap,.txt,.prog,.clas,.asddls,.asbdef" multiple hidden>
+  </div>
+
+  <div class="workbench">
+    <div class="editor">
+      <div class="editor-bar"><span id="editor-name">Código ABAP</span><span id="editor-lines">0 líneas</span></div>
+      <div class="editor-body">
+        <div class="gutter" id="gutter">1</div>
+        <textarea id="src" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Pega aquí tu código ABAP, o arrastra archivos .abap / .txt..."></textarea>
+      </div>
+    </div>
+
+    <div class="panel" id="panel">
+      <div class="panel-empty">
+        Pega código y pulsa <strong>Analizar</strong>, o carga uno de los ejemplos de arriba.
+      </div>
+    </div>
+  </div>
+</div>
+
+<template id="panel-empty-tpl"><div class="panel-empty">Pega código y pulsa <strong>Analizar</strong>, o carga uno de los ejemplos de arriba.</div></template>
+<textarea hidden id="example-legacy">{{include:herramientas/ejemplos/zr_pedidos_legacy.abap}}</textarea>
+<textarea hidden id="example-s4">{{include:herramientas/ejemplos/zr_ventas_s4.abap}}</textarea>
+<textarea hidden id="example-security">{{include:herramientas/ejemplos/zcl_interfaz_inseguro.abap}}</textarea>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="grid grid-3">
+      <div>
+        <h3>Qué revisa</h3>
+        <p class="muted">{{rules_count}} reglas en siete categorías: preparado para ABAP Cloud, migración a S/4HANA, compatibilidad con la versión de ABAP, sintaxis obsoleta, rendimiento, seguridad y buenas prácticas. Cada hallazgo explica por qué es un problema y cómo se corrige.</p>
+      </div>
+      <div>
+        <h3>Qué corrige solo</h3>
+        <p class="muted">MOVE, COMPUTE, ADD, REFRESH, DESCRIBE LINES, CREATE OBJECT, CALL METHOD, CONCATENATE simple y, en ABAP Cloud, sy-datum, sy-uzeit y sy-uname. Las correcciones se adaptan a la versión: en un ECC 7.40 no propone <code>+=</code>, en un 7.0x no propone <code>NEW</code>.</p>
+      </div>
+      <div>
+        <h3>Qué no es</h3>
+        <p class="muted">No sustituye al ATC de SAP, que conoce el estado real de cada objeto en tu sistema. Sirve para revisar código antes de tenerlo en un sistema, preparar una migración o hacer una revisión rápida.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Sistemas</p>
+      <h2>Qué cambia según el sistema destino</h2>
+    </div>
+    <table>
+      <thead><tr><th>Sistema</th><th>Qué se comprueba además de lo común</th></tr></thead>
+      <tbody>
+        <tr><td>ECC 6.0 · ABAP 7.00 a 7.31</td><td>Sintaxis que no compila en esas versiones: declaraciones en línea, expresiones de constructor, expresiones de tabla, SQL con @, <code>+=</code></td></tr>
+        <tr><td>ECC 6.0 · ABAP 7.40 / 7.50</td><td>Operadores <code>+=</code> (7.54). Correcciones automáticas sin sintaxis de 7.54</td></tr>
+        <tr><td>S/4HANA on-premise</td><td>Simplificación de S/4HANA: VBUK, VBUP, KONV, MKPF/MSEG, BSIS y totales sustituidos; orden de SELECT en HANA; MATNR de 40; Business Partner; transacciones MB* y batch input</td></tr>
+        <tr><td>S/4HANA Cloud Private Edition</td><td>Lo de on-premise y las reglas de ABAP Cloud como aviso (recomendación clean core)</td></tr>
+        <tr><td>S/4HANA Cloud Public Edition</td><td>ABAP Cloud estricto: objetos liberados, sin SAP GUI, sin acceso a tablas de SAP, sin COMMIT WORK</td></tr>
+        <tr><td>SAP BTP ABAP Environment</td><td>Igual que Public Edition</td></tr>
+      </tbody>
+    </table>
+    <div class="callout" style="margin-top:20px">Para dejar una excepción documentada en tu propio código (por ejemplo, un SUBMIT dinámico que ya validas), añade al final de la línea <code>" cleancore:ignorar SEC-010 motivo</code>. La regla no se aplicará a esa sentencia.</div>
+  </div>
+</section>
+
+<section class="section section-alt" id="reglas">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Catálogo</p>
+      <h2>Reglas que aplica</h2>
+      <p>La columna "Sistemas" indica dónde se aplica cada regla.</p>
+    </div>
+    {{cleancore_rules}}
+  </div>
+</section>

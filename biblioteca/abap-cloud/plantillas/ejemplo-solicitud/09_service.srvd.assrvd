@@ -1,0 +1,4 @@
+@EndUserText.label: 'Solicitud - servicio'
+define service ZUI_REQUEST_ABK {
+  expose ZC_REQUEST_ABK as Request;
+}

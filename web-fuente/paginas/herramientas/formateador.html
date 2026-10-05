@@ -1,0 +1,39 @@
+<!-- {"title": "Formateador de código ABAP", "description": "Formatea código ABAP en el navegador como el Pretty Printer: sangría por bloques y palabras clave en mayúsculas o minúsculas, sin tocar literales ni comentarios.", "out": "herramientas/formateador.html", "nav": "herramientas", "styles": ["css/tool.css"], "scripts": ["js/abap-highlight.js", "js/abap-format.js", "js/formateador-ui.js"]} -->
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / Formateador ABAP</div>
+    <h1>Formateador de código ABAP</h1>
+    <p>El Pretty Printer sin abrir el sistema: pega código copiado de un correo, de un ticket o de un documento y recupera la sangría por bloques y el estilo de las palabras clave. Útil también para revisar código en una wiki o en una pull request de abapGit.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:28px">
+  <div class="wrap">
+    <div class="toolbar" style="padding-top:0">
+      <label for="fmt-case">Palabras clave</label>
+      <select id="fmt-case">
+        <option value="mixed">Mayúsculas, nombres en minúsculas</option>
+        <option value="upper">Mayúsculas (resto sin cambiar)</option>
+        <option value="lower">Minúsculas (resto sin cambiar)</option>
+        <option value="keep">Sin cambiar</option>
+      </select>
+      <label for="fmt-indent">Sangría</label>
+      <select id="fmt-indent"><option value="2">2 espacios</option><option value="4">4 espacios</option></select>
+      <span class="spacer"></span>
+      <button class="btn btn-secondary btn-small" id="fmt-example" type="button">Ejemplo</button>
+      <button class="btn btn-small" id="fmt-copy" type="button">Copiar resultado</button>
+    </div>
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card form" style="min-width:0;padding:16px">
+        <label for="fmt-in">Código</label>
+        <textarea id="fmt-in" spellcheck="false" style="min-height:520px;font-family:var(--mono);font-size:12.5px;white-space:pre"></textarea>
+      </div>
+      <div class="code-window" style="min-width:0">
+        <div class="bar"><span>Resultado</span><span id="fmt-stats"></span></div>
+        <pre id="fmt-out" style="max-height:580px;overflow:auto;min-height:520px"></pre>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:14px">Reconoce IF/ELSEIF/ELSE, LOOP, DO, WHILE, CASE/WHEN, TRY/CATCH/CLEANUP, METHOD, FORM, FUNCTION, MODULE, CLASS con sus secciones, INTERFACE, AT NEW/END OF y SELECT ... ENDSELECT. Las líneas de continuación (WHERE, AND, parámetros) conservan su sangría relativa. Los comentarios con * se quedan en la columna 1, como en SAP.</p>
+  </div>
+</section>

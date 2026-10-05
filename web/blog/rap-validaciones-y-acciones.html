@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAP: validaciones, determinaciones y acciones sin sorpresas · Abel González Guerra</title>
+<meta name="description" content="Cuándo se ejecuta cada validación y determinación en RAP, cómo marcar el campo erróneo en Fiori con %element y %state_area, y por qué MAX + 1 no sirve para numerar.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RAP: validaciones, determinaciones y acciones sin sorpresas · Abel González Guerra">
+<meta property="og:description" content="Cuándo se ejecuta cada validación y determinación en RAP, cómo marcar el campo erróneo en Fiori con %element y %state_area, y por qué MAX + 1 no sirve para numerar.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html" class="active" aria-current="page">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Blog</a> / RAP</div>
+    <h1 style="max-width:820px">RAP: validaciones, determinaciones y acciones sin sorpresas</h1>
+    <p class="article-meta">Abel González Guerra · 10 min de lectura</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px">
+  <div class="wrap article">
+    <p>Las tres piezas de lógica de negocio de un Business Object RAP parecen sencillas en la documentación y dan bastantes sorpresas en el primer proyecto. Estas son las que me encontré construyendo una app de gestión de incidencias, y cómo las resolví.</p>
+
+    <h2>Qué es cada una</h2>
+    <table>
+      <thead><tr><th>Pieza</th><th>Para qué</th><th>Puede modificar datos</th><th>Puede rechazar</th></tr></thead>
+      <tbody>
+        <tr><td>Determinación</td><td>Calcular o rellenar campos automáticamente</td><td>Sí</td><td>No</td></tr>
+        <tr><td>Validación</td><td>Comprobar que los datos son correctos</td><td>No</td><td>Sí (<code>FAILED</code>)</td></tr>
+        <tr><td>Acción</td><td>Operación que lanza el usuario (un botón)</td><td>Sí</td><td>Sí</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Cuándo se ejecutan</h2>
+    <p>Aquí está la mayoría de sorpresas. Una determinación <code>on modify</code> se ejecuta en cuanto cambian los campos que declara; una <code>on save</code>, justo antes de guardar. Las validaciones siempre son <code>on save</code>.</p>
+<pre class="abap"><code><span class="k">determination</span> setDefaultValues  <span class="k">on</span> <span class="k">modify</span> { <span class="k">create</span>; }
+<span class="k">determination</span> setDefaultHistory <span class="k">on</span> save   { <span class="k">create</span>; }
+
+<span class="k">validation</span> validateMandatoryFields <span class="k">on</span> save { <span class="k">create</span>; <span class="k">update</span>; }
+<span class="k">validation</span> validateDates           <span class="k">on</span> save { <span class="k">field</span> CreationDate, ChangedDate; }
+<span class="k">validation</span> validateDeleteStatus    <span class="k">on</span> save { <span class="k">delete</span>; }</code></pre>
+    <p>Con <strong>draft</strong> hay un matiz importante: mientras el usuario edita, los datos viven en la tabla de borradores y "guardar" no ocurre hasta pulsar el botón de activar. Si quieres que las validaciones se ejecuten antes, al salir de un campo o al pulsar "Guardar" en el borrador, hay que listarlas en la acción <code>Prepare</code>:</p>
+<pre class="abap"><code><span class="k">draft</span> determine <span class="k">action</span> Prepare
+{
+  <span class="k">validation</span> validateMandatoryFields;
+  <span class="k">validation</span> validateDates;
+}</code></pre>
+    <p>Si una validación no está en <code>Prepare</code>, el usuario no verá el error hasta activar, y en apps con muchas pestañas eso es confuso.</p>
+
+    <h2>Marcar el campo, no solo mostrar un mensaje</h2>
+    <p>Un mensaje genérico arriba de la pantalla obliga al usuario a buscar qué está mal. Rellenando <code>%element</code>, Fiori pone el campo en rojo y lleva el foco hasta él:</p>
+<pre class="abap"><code><span class="k">IF</span> incident-Title <span class="k">IS</span> <span class="k">INITIAL</span>.
+  <span class="k">APPEND</span> <span class="k">VALUE</span> #( %tky = incident-%tky ) <span class="k">TO</span> failed-incident.
+  <span class="k">APPEND</span> <span class="k">VALUE</span> #( %tky           = incident-%tky
+                  %state_area    = <span class="s">'VALIDATE_MANDATORY'</span>
+                  %msg           = new_message_with_text(
+                                     severity = if_abap_behv_message=&gt;severity-error
+                                     text     = <span class="s">'Title is mandatory'</span> )
+                  %element-Title = if_abap_behv=&gt;mk-on )
+    <span class="k">TO</span> reported-incident.
+<span class="k">ENDIF</span>.</code></pre>
+    <p>El <code>%state_area</code> sirve para que el mensaje desaparezca solo cuando el error se corrige. La práctica habitual es, al principio de la validación, añadir una entrada a <code>REPORTED</code> con el <code>%state_area</code> y sin mensaje, lo que limpia los mensajes anteriores de esa área antes de volver a comprobar.</p>
+
+    <h2>El error de numerar con MAX + 1</h2>
+    <p>Casi todos los ejemplos de formación asignan el número legible así:</p>
+<pre class="abap"><code><span class="k">SELECT</span> <span class="k">SINGLE</span> MAX( incident_id ) <span class="k">FROM</span> zdt_inct_agg <span class="k">INTO</span> @<span class="k">DATA</span>(lv_max_id).
+<span class="c">" ... IncidentID = lv_max_id + 1</span></code></pre>
+    <p>Funciona con un usuario. Con dos usuarios creando a la vez, ambos leen el mismo máximo y obtienen el mismo número. Además, en una creación masiva todos los registros del mismo lote reciben el mismo valor si no se suma el índice. Lo correcto en productivo es un objeto de rango de números:</p>
+<pre class="abap"><code>cl_numberrange_runtime=&gt;number_get(
+  <span class="k">EXPORTING</span> nr_range_nr = <span class="s">'01'</span>
+            <span class="k">object</span>      = <span class="s">'ZINC_NR'</span>
+  <span class="k">IMPORTING</span> number      = <span class="k">DATA</span>(lv_number) ).</code></pre>
+    <p>Y hacerlo en <code>early numbering</code> o en una determinación <code>on save</code>, para que solo se consuma número cuando el registro se guarda de verdad.</p>
+
+    <h2>Acciones: deshabilitar mejor que rechazar</h2>
+    <p>Una acción que no tiene sentido en un estado (cambiar el estado de una incidencia cerrada) puede rechazarse con un error, pero es mejor no dejar pulsarla. Con <code>features : instance</code>, el método <code>get_instance_features</code> decide para cada registro si el botón está habilitado:</p>
+<pre class="abap"><code><span class="k">action</span> ( <span class="k">features</span> : instance ) changeStatus
+  <span class="k">parameter</span> zdd_change_status_param_agg <span class="k">result</span> [<span class="n">1</span>] $self;</code></pre>
+    <p>Dos detalles que conviene no olvidar:</p>
+    <ul>
+      <li><strong><code>result [1] $self</code></strong> devuelve la instancia actualizada, y Fiori refresca la pantalla sin que el usuario recargue.</li>
+      <li><strong><code>side effects { action changeStatus affects $self; }</code></strong> asegura que también se refrescan las secciones dependientes, como la tabla de historial.</li>
+    </ul>
+    <p>Aun así, la acción debe volver a validar en el servidor. El botón deshabilitado es una comodidad para el usuario, no una medida de seguridad: el servicio OData se puede llamar directamente.</p>
+
+    <h2>IN LOCAL MODE</h2>
+    <p>Dentro del behavior pool, las lecturas y modificaciones con EML se hacen con <code>IN LOCAL MODE</code>. Eso salta las comprobaciones de autorización y de features del propio BO, que es lo que se quiere: el código interno puede cambiar el campo <code>Status</code> aunque para el usuario sea de solo lectura. Sin <code>IN LOCAL MODE</code>, el propio framework rechazaría la modificación.</p>
+
+    <div class="callout">Todo esto está aplicado en el <a href="../proyectos/gestion-incidencias.html">proyecto de gestión de incidencias</a>, y la <a href="../herramientas/generadores.html">plantilla RAP del generador</a> ya incluye <code>Prepare</code>, <code>%state_area</code>, <code>%element</code> y side effects.</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script src="../js/site.js"></script>
+</body>
+</html>

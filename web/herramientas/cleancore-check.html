@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CleanCore Check: análisis de código ABAP · Abel González Guerra</title>
+<meta name="description" content="Herramienta gratuita: analiza código ABAP en el navegador para ECC, S/4HANA on-premise, Private Edition, Public Edition y BTP. Compatibilidad, migración a S/4HANA, rendimiento, seguridad y sintaxis obsoleta, con la corrección de cada hallazgo.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="CleanCore Check: análisis de código ABAP · Abel González Guerra">
+<meta property="og:description" content="Herramienta gratuita: analiza código ABAP en el navegador para ECC, S/4HANA on-premise, Private Edition, Public Edition y BTP. Compatibilidad, migración a S/4HANA, rendimiento, seguridad y sintaxis obsoleta, con la corrección de cada hallazgo.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/tool.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html" class="active" aria-current="page">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / CleanCore Check</div>
+    <h1>CleanCore Check</h1>
+    <p>Pega un report, una clase o un include, o abre varios archivos a la vez. Elige el sistema donde va a funcionar y te dice qué no compilará, qué se rompe al migrar a S/4HANA, qué lo hace lento y qué es un riesgo de seguridad, con la corrección de cada caso. Gratis y sin registro. El análisis se hace en tu navegador: el código no se envía a ningún servidor.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="toolbar">
+    <label for="target">Sistema destino</label>
+    <select id="target" style="min-width:300px"></select>
+    <span class="spacer"></span>
+    <span class="small muted"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span></span>
+    <button class="btn btn-small" id="btn-run" type="button">Analizar</button>
+  </div>
+  <p class="small muted" id="target-note" style="margin:-6px 0 12px"></p>
+  <div class="toolbar" style="padding-top:0">
+    <span class="small muted">Ejemplos:</span>
+    <button class="btn btn-secondary btn-small" data-example="legacy" type="button">Report de 2009</button>
+    <button class="btn btn-secondary btn-small" data-example="s4" type="button">Migración a S/4HANA</button>
+    <button class="btn btn-secondary btn-small" data-example="security" type="button">Seguridad</button>
+    <span class="spacer"></span>
+    <button class="btn btn-secondary btn-small" id="btn-file" type="button">Abrir archivos</button>
+    <button class="btn btn-secondary btn-small" id="btn-clear" type="button">Limpiar</button>
+    <input type="file" id="file" accept=".abap,.txt,.prog,.clas,.asddls,.asbdef" multiple hidden>
+  </div>
+
+  <div class="workbench">
+    <div class="editor">
+      <div class="editor-bar"><span id="editor-name">Código ABAP</span><span id="editor-lines">0 líneas</span></div>
+      <div class="editor-body">
+        <div class="gutter" id="gutter">1</div>
+        <textarea id="src" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Pega aquí tu código ABAP, o arrastra archivos .abap / .txt..."></textarea>
+      </div>
+    </div>
+
+    <div class="panel" id="panel">
+      <div class="panel-empty">
+        Pega código y pulsa <strong>Analizar</strong>, o carga uno de los ejemplos de arriba.
+      </div>
+    </div>
+  </div>
+</div>
+
+<template id="panel-empty-tpl"><div class="panel-empty">Pega código y pulsa <strong>Analizar</strong>, o carga uno de los ejemplos de arriba.</div></template>
+<textarea hidden id="example-legacy">*&amp;---------------------------------------------------------------------*
+*&amp; Report ZR_PEDIDOS_PENDIENTES
+*&amp; Listado de pedidos de compra pendientes de entrada de mercancía
+*&amp; Escrito en 2009, modificado varias veces desde entonces
+*&amp;---------------------------------------------------------------------*
+REPORT zr_pedidos_pendientes.
+
+TABLES: ekko.
+
+DATA: BEGIN OF it_pedidos OCCURS 0,
+        ebeln LIKE ekko-ebeln,
+        lifnr LIKE ekko-lifnr,
+        name1 LIKE lfa1-name1,
+        ebelp LIKE ekpo-ebelp,
+        matnr LIKE ekpo-matnr,
+        maktx LIKE makt-maktx,
+        menge LIKE ekpo-menge,
+        netwr LIKE ekpo-netwr,
+      END OF it_pedidos.
+
+DATA: it_ekpo  TYPE TABLE OF ekpo WITH HEADER LINE,
+      wa_ekko  TYPE ekko,
+      lv_count TYPE i,
+      lv_total TYPE ekpo-netwr,
+      lv_texto TYPE string,
+      lv_fecha TYPE sy-datum,
+      lv_pass  TYPE string.
+
+RANGES r_bsart FOR ekko-bsart.
+
+SELECT-OPTIONS: s_ebeln FOR ekko-ebeln,
+                s_bukrs FOR ekko-bukrs OBLIGATORY.
+PARAMETERS: p_where TYPE string.
+
+START-OF-SELECTION.
+
+  lv_pass = 'Compras2009!'.
+  MOVE sy-datum TO lv_fecha.
+  REFRESH it_pedidos.
+
+  r_bsart-sign = 'I'. r_bsart-option = 'EQ'. r_bsart-low = 'NB'.
+  APPEND r_bsart.
+
+  SELECT * FROM ekko INTO wa_ekko
+    WHERE ebeln IN s_ebeln
+      AND bukrs IN s_bukrs
+      AND bsart IN r_bsart.
+
+    SELECT * FROM ekpo INTO TABLE it_ekpo
+      WHERE ebeln = wa_ekko-ebeln
+        AND elikz = space.
+
+    LOOP AT it_ekpo.
+      CLEAR it_pedidos.
+      MOVE-CORRESPONDING it_ekpo TO it_pedidos.
+      it_pedidos-lifnr = wa_ekko-lifnr.
+
+      SELECT SINGLE name1 FROM lfa1 INTO it_pedidos-name1
+        WHERE lifnr = wa_ekko-lifnr.
+
+      SELECT SINGLE maktx FROM makt INTO it_pedidos-maktx
+        WHERE matnr = it_ekpo-matnr
+          AND spras = sy-langu.
+
+      ADD it_ekpo-netwr TO lv_total.
+      APPEND it_pedidos.
+    ENDLOOP.
+
+  ENDSELECT.
+
+  IF sy-uname = 'JGARCIA'.
+    " Compras quiere ver también los pedidos borrados
+    SELECT * FROM ekpo INTO TABLE it_ekpo WHERE (p_where).
+  ENDIF.
+
+  DESCRIBE TABLE it_pedidos LINES lv_count.
+  CONCATENATE 'Pedidos pendientes:' lv_texto INTO lv_texto SEPARATED BY space.
+
+  PERFORM mostrar_alv.
+
+  LOOP AT it_pedidos.
+    READ TABLE it_ekpo WITH KEY ebeln = it_pedidos-ebeln BINARY SEARCH.
+    IF sy-subrc = 0.
+      it_pedidos-menge = it_ekpo-menge.
+      MODIFY it_pedidos.
+    ENDIF.
+  ENDLOOP.
+
+*&amp;---------------------------------------------------------------------*
+FORM mostrar_alv.
+  DATA: lo_alv TYPE REF TO cl_salv_table.
+
+  TRY.
+      CALL METHOD cl_salv_table=&gt;factory
+        IMPORTING
+          r_salv_table = lo_alv
+        CHANGING
+          t_table      = it_pedidos[].
+      CALL METHOD lo_alv-&gt;display.
+    CATCH cx_root.
+  ENDTRY.
+
+  WRITE: / 'Total:', lv_total, 'Fecha:', lv_fecha.
+ENDFORM.
+</textarea>
+<textarea hidden id="example-s4">*&amp;---------------------------------------------------------------------*
+*&amp; Report ZR_ENTREGAS_PENDIENTES
+*&amp; Pedidos de venta con entrega pendiente y su precio neto
+*&amp; Funciona en ECC. Pendiente de revisar para la migración a S/4HANA.
+*&amp;---------------------------------------------------------------------*
+REPORT zr_entregas_pendientes.
+
+TYPES: BEGIN OF ty_pedido,
+         vbeln TYPE vbak-vbeln,
+         posnr TYPE vbap-posnr,
+         matnr TYPE c LENGTH 18,
+         kwmeng TYPE vbap-kwmeng,
+         kbetr TYPE konv-kbetr,
+         lfsta TYPE vbup-lfsta,
+       END OF ty_pedido.
+
+DATA: lt_vbap    TYPE STANDARD TABLE OF vbap,
+      ls_vbap    TYPE vbap,
+      lt_vbup    TYPE STANDARD TABLE OF vbup,
+      ls_vbup    TYPE vbup,
+      lt_pedidos TYPE STANDARD TABLE OF ty_pedido,
+      ls_pedido  TYPE ty_pedido.
+
+SELECT-OPTIONS s_vbeln FOR ls_vbap-vbeln.
+
+START-OF-SELECTION.
+
+  SELECT * FROM vbap INTO TABLE lt_vbap
+    WHERE vbeln IN s_vbeln
+      AND werks = '1100'.
+
+  SELECT * FROM vbup INTO TABLE lt_vbup
+    FOR ALL ENTRIES IN lt_vbap
+    WHERE vbeln = lt_vbap-vbeln
+      AND posnr = lt_vbap-posnr
+      AND lfsta &lt;&gt; 'C'.
+
+  LOOP AT lt_vbap INTO ls_vbap.
+    READ TABLE lt_vbup INTO ls_vbup
+      WITH KEY vbeln = ls_vbap-vbeln posnr = ls_vbap-posnr BINARY SEARCH.
+    CHECK sy-subrc = 0.
+
+    ls_pedido-vbeln  = ls_vbap-vbeln.
+    ls_pedido-posnr  = ls_vbap-posnr.
+    ls_pedido-matnr  = ls_vbap-matnr+0(18).
+    ls_pedido-kwmeng = ls_vbap-kwmeng.
+    ls_pedido-lfsta  = ls_vbup-lfsta.
+
+    SELECT SINGLE kbetr FROM konv INTO ls_pedido-kbetr
+      WHERE knumv = ls_vbap-vbeln
+        AND kschl = 'PR00'.
+
+    APPEND ls_pedido TO lt_pedidos.
+  ENDLOOP.
+
+* SELECT * FROM vbuk INTO TABLE lt_vbuk
+*   FOR ALL ENTRIES IN lt_vbap
+*   WHERE vbeln = lt_vbap-vbeln.
+* LOOP AT lt_vbuk INTO ls_vbuk.
+*   DELETE lt_pedidos WHERE vbeln = ls_vbuk-vbeln.
+* ENDLOOP.
+
+  IF lt_pedidos IS INITIAL.
+    " Si no hay pendientes, se da de alta el cliente de prueba (petición de 2014)
+    CALL TRANSACTION 'XD01' WITH AUTHORITY-CHECK.
+  ENDIF.
+</textarea>
+<textarea hidden id="example-security">"! Interfaz de precios con un proveedor externo.
+"! Lee un fichero del servidor, actualiza precios y llama a una API REST.
+CLASS zcl_interfaz_precios DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS importar
+      IMPORTING iv_fichero TYPE string
+                iv_filtro  TYPE string.
+  PRIVATE SECTION.
+    CONSTANTS gc_api_key TYPE string VALUE 'CLAVE-FICTICIA-DE-EJEMPLO'.
+ENDCLASS.
+
+
+CLASS zcl_interfaz_precios IMPLEMENTATION.
+
+  METHOD importar.
+    DATA lv_linea   TYPE string.
+    DATA lv_where   TYPE string.
+    DATA lv_token   TYPE string.
+
+    lv_token = 'Bearer CLAVE-FICTICIA-DE-EJEMPLO'.
+
+    " El fichero lo indica el usuario en la pantalla
+    OPEN DATASET iv_fichero FOR INPUT IN TEXT MODE ENCODING DEFAULT.
+    DO.
+      READ DATASET iv_fichero INTO lv_linea.
+      IF sy-subrc &lt;&gt; 0.
+        EXIT.
+      ENDIF.
+    ENDDO.
+    CLOSE DATASET iv_fichero.
+
+    " Filtro libre que llega desde la llamada RFC
+    CONCATENATE 'MATNR LIKE ''' iv_filtro '%''' INTO lv_where.
+    SELECT matnr, meins FROM mara
+      WHERE (lv_where)
+      INTO TABLE @DATA(lt_mara).
+
+    LOOP AT lt_mara INTO DATA(ls_mara).
+      UPDATE mbew SET verpr = 0
+        WHERE matnr = @ls_mara-matnr.
+    ENDLOOP.
+
+    IF sy-uname = 'ADMIN_INTERF'.
+      " El usuario de interfaz no necesita autorización
+      RETURN.
+    ENDIF.
+
+    TRY.
+        cl_http_client=&gt;create_by_url( EXPORTING url = 'https://api.proveedor.com/precios'
+                                       IMPORTING client = DATA(lo_client) ).
+      CATCH cx_root.
+    ENDTRY.
+
+    COMMIT WORK.
+  ENDMETHOD.
+
+ENDCLASS.
+</textarea>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="grid grid-3">
+      <div>
+        <h3>Qué revisa</h3>
+        <p class="muted">72 reglas en siete categorías: preparado para ABAP Cloud, migración a S/4HANA, compatibilidad con la versión de ABAP, sintaxis obsoleta, rendimiento, seguridad y buenas prácticas. Cada hallazgo explica por qué es un problema y cómo se corrige.</p>
+      </div>
+      <div>
+        <h3>Qué corrige solo</h3>
+        <p class="muted">MOVE, COMPUTE, ADD, REFRESH, DESCRIBE LINES, CREATE OBJECT, CALL METHOD, CONCATENATE simple y, en ABAP Cloud, sy-datum, sy-uzeit y sy-uname. Las correcciones se adaptan a la versión: en un ECC 7.40 no propone <code>+=</code>, en un 7.0x no propone <code>NEW</code>.</p>
+      </div>
+      <div>
+        <h3>Qué no es</h3>
+        <p class="muted">No sustituye al ATC de SAP, que conoce el estado real de cada objeto en tu sistema. Sirve para revisar código antes de tenerlo en un sistema, preparar una migración o hacer una revisión rápida.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Sistemas</p>
+      <h2>Qué cambia según el sistema destino</h2>
+    </div>
+    <table>
+      <thead><tr><th>Sistema</th><th>Qué se comprueba además de lo común</th></tr></thead>
+      <tbody>
+        <tr><td>ECC 6.0 · ABAP 7.00 a 7.31</td><td>Sintaxis que no compila en esas versiones: declaraciones en línea, expresiones de constructor, expresiones de tabla, SQL con @, <code>+=</code></td></tr>
+        <tr><td>ECC 6.0 · ABAP 7.40 / 7.50</td><td>Operadores <code>+=</code> (7.54). Correcciones automáticas sin sintaxis de 7.54</td></tr>
+        <tr><td>S/4HANA on-premise</td><td>Simplificación de S/4HANA: VBUK, VBUP, KONV, MKPF/MSEG, BSIS y totales sustituidos; orden de SELECT en HANA; MATNR de 40; Business Partner; transacciones MB* y batch input</td></tr>
+        <tr><td>S/4HANA Cloud Private Edition</td><td>Lo de on-premise y las reglas de ABAP Cloud como aviso (recomendación clean core)</td></tr>
+        <tr><td>S/4HANA Cloud Public Edition</td><td>ABAP Cloud estricto: objetos liberados, sin SAP GUI, sin acceso a tablas de SAP, sin COMMIT WORK</td></tr>
+        <tr><td>SAP BTP ABAP Environment</td><td>Igual que Public Edition</td></tr>
+      </tbody>
+    </table>
+    <div class="callout" style="margin-top:20px">Para dejar una excepción documentada en tu propio código (por ejemplo, un SUBMIT dinámico que ya validas), añade al final de la línea <code>" cleancore:ignorar SEC-010 motivo</code>. La regla no se aplicará a esa sentencia.</div>
+  </div>
+</section>
+
+<section class="section section-alt" id="reglas">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Catálogo</p>
+      <h2>Reglas que aplica</h2>
+      <p>La columna "Sistemas" indica dónde se aplica cada regla.</p>
+    </div>
+    <table class="rules-table"><thead><tr><th>Regla</th><th>Qué detecta</th><th>Categoría</th><th>Gravedad</th><th>Sistemas</th></tr></thead><tbody><tr><td>OBS-001</td><td>MOVE ... TO</td><td>Sintaxis obsoleta</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>OBS-002</td><td>MOVE-CORRESPONDING</td><td>Sintaxis obsoleta</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">ECC 7.40, S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>OBS-003</td><td>COMPUTE</td><td>Sintaxis obsoleta</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>OBS-004</td><td>ADD / SUBTRACT / MULTIPLY / DIVIDE</td><td>Sintaxis obsoleta</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>OBS-005</td><td>Tabla con cabecera (WITH HEADER LINE / OCCURS)</td><td>Sintaxis obsoleta</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>OBS-006</td><td>Sentencia TABLES</td><td>Sintaxis obsoleta</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>OBS-007</td><td>FORM / PERFORM</td><td>Sintaxis obsoleta</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>OBS-008</td><td>RANGES</td><td>Sintaxis obsoleta</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>OBS-009</td><td>REFRESH</td><td>Sintaxis obsoleta</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>OBS-010</td><td>DESCRIBE TABLE ... LINES</td><td>Sintaxis obsoleta</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>OBS-011</td><td>CREATE OBJECT</td><td>Sintaxis obsoleta</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">ECC 7.40, S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>OBS-012</td><td>CALL METHOD</td><td>Sintaxis obsoleta</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>OBS-013</td><td>ON CHANGE OF</td><td>Sintaxis obsoleta</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>OBS-014</td><td>LOOP sin área de trabajo</td><td>Sintaxis obsoleta</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>OBS-015</td><td>READ TABLE en lugar de expresión de tabla</td><td>Sintaxis obsoleta</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">ECC 7.40, S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>OBS-016</td><td>CONCATENATE</td><td>Sintaxis obsoleta</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>OBS-017</td><td>Open SQL sin host variables (@)</td><td>Sintaxis obsoleta</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">ECC 7.40, S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>PERF-001</td><td>SELECT dentro de un bucle</td><td>Rendimiento</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>PERF-002</td><td>SELECT *</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>PERF-003</td><td>FOR ALL ENTRIES sin comprobar que la tabla tenga datos</td><td>Rendimiento</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>PERF-004</td><td>BINARY SEARCH sin SORT previo</td><td>Rendimiento</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>PERF-005</td><td>DELETE ADJACENT DUPLICATES sin SORT previo</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>PERF-006</td><td>LOOP ... WHERE anidado</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>PERF-007</td><td>MODIFY dentro del LOOP con área de trabajo</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>PERF-008</td><td>BYPASSING BUFFER</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>PERF-009</td><td>COMMIT WORK dentro de un bucle</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>PERF-010</td><td>SELECT ... ENDSELECT</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>CLD-001</td><td>Campos de sistema sy-datum / sy-uzeit / sy-uname</td><td>Preparado para Cloud</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-002</td><td>Acceso directo a tabla estándar de SAP</td><td>Preparado para Cloud</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-003</td><td>Interfaz SAP GUI (WRITE, dynpros, ALV clásico, pantallas de selección)</td><td>Preparado para Cloud</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-004</td><td>Ficheros de PC o del servidor</td><td>Preparado para Cloud</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-005</td><td>CALL TRANSACTION / SUBMIT / LEAVE TO TRANSACTION</td><td>Preparado para Cloud</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-006</td><td>Módulo de función no liberado</td><td>Preparado para Cloud</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-007</td><td>EXPORT/IMPORT MEMORY, SET/GET PARAMETER</td><td>Preparado para Cloud</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-008</td><td>COMMIT WORK / ROLLBACK WORK directo</td><td>Preparado para Cloud</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-010</td><td>Clase de SAP no liberada</td><td>Preparado para Cloud</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>CLD-009</td><td>MESSAGE con tipo (diálogo)</td><td>Preparado para Cloud</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">S/4 PCE, S/4 Public, BTP</td></tr><tr><td>SEC-001</td><td>Cláusula WHERE dinámica</td><td>Seguridad</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>SEC-002</td><td>Tabla o campos dinámicos en SQL</td><td>Seguridad</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>SEC-003</td><td>Credenciales en el código</td><td>Seguridad</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>SEC-004</td><td>Usuario escrito en el código</td><td>Seguridad</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>SEC-005</td><td>CLIENT SPECIFIED / USING CLIENT</td><td>Seguridad</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>SEC-006</td><td>CALL TRANSACTION sin comprobar autorización</td><td>Seguridad</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>SEC-007</td><td>Generación de código o SQL nativo</td><td>Seguridad</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>QA-001</td><td>BREAK-POINT en el código</td><td>Buenas prácticas</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>QA-002</td><td>CATCH vacío</td><td>Buenas prácticas</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>QA-003</td><td>CATCH cx_root</td><td>Buenas prácticas</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>QA-004</td><td>WAIT UP TO</td><td>Buenas prácticas</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>QA-005</td><td>Pseudocomentario "#EC</td><td>Buenas prácticas</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>QA-006</td><td>Procedimiento muy largo</td><td>Buenas prácticas</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>QA-007</td><td>Texto literal en un mensaje</td><td>Buenas prácticas</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>QA-008</td><td>Valor organizativo fijo en el código</td><td>Buenas prácticas</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>QA-009</td><td>MESSAGE de tipo A o X</td><td>Buenas prácticas</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>QA-010</td><td>Bloque de código comentado</td><td>Buenas prácticas</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>PERF-011</td><td>SELECT COUNT(*) para comprobar si existe</td><td>Rendimiento</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>PERF-012</td><td>SORT dentro de un bucle</td><td>Rendimiento</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>PERF-013</td><td>COLLECT para sumar</td><td>Rendimiento</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">Todos</td></tr><tr><td>SEC-008</td><td>Escritura directa en tablas estándar de SAP</td><td>Seguridad</td><td><span class="sev sev-error">Error</span></td><td class="small">Todos</td></tr><tr><td>SEC-009</td><td>Ruta de fichero sin validar</td><td>Seguridad</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>SEC-010</td><td>Transacción o programa dinámico</td><td>Seguridad</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">Todos</td></tr><tr><td>REL-001</td><td>Declaración en línea (requiere 7.40)</td><td>Compatibilidad de versión</td><td><span class="sev sev-error">Error</span></td><td class="small">ECC 7.0x</td></tr><tr><td>REL-002</td><td>Expresión de constructor (requiere 7.40)</td><td>Compatibilidad de versión</td><td><span class="sev sev-error">Error</span></td><td class="small">ECC 7.0x</td></tr><tr><td>REL-003</td><td>Expresión de tabla o line_exists (requiere 7.40)</td><td>Compatibilidad de versión</td><td><span class="sev sev-error">Error</span></td><td class="small">ECC 7.0x</td></tr><tr><td>REL-004</td><td>SQL con @ y comas (requiere 7.40 SP05)</td><td>Compatibilidad de versión</td><td><span class="sev sev-error">Error</span></td><td class="small">ECC 7.0x</td></tr><tr><td>REL-005</td><td>Operador +=, -=, *= o /= (requiere 7.54)</td><td>Compatibilidad de versión</td><td><span class="sev sev-error">Error</span></td><td class="small">ECC 7.0x, ECC 7.40</td></tr><tr><td>REL-006</td><td>String template (requiere 7.02)</td><td>Compatibilidad de versión</td><td><span class="sev sev-info">Sugerencia</span></td><td class="small">ECC 7.0x</td></tr><tr><td>S4-001</td><td>Tabla eliminada o sustituida en S/4HANA</td><td>Migración a S/4HANA</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>S4-002</td><td>Se da por hecho el orden de una SELECT sin ORDER BY</td><td>Migración a S/4HANA</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>S4-003</td><td>Material con longitud fija de 18 caracteres</td><td>Migración a S/4HANA</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>S4-004</td><td>Clientes y proveedores fuera de Business Partner</td><td>Migración a S/4HANA</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>S4-005</td><td>Transacción de movimientos de stock obsoleta</td><td>Migración a S/4HANA</td><td><span class="sev sev-error">Error</span></td><td class="small">S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr><tr><td>S4-006</td><td>Batch input (CALL TRANSACTION ... USING)</td><td>Migración a S/4HANA</td><td><span class="sev sev-warning">Aviso</span></td><td class="small">S/4 on-prem, S/4 PCE, S/4 Public, BTP</td></tr></tbody></table>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/abap-highlight.js"></script>
+<script src="../js/cleancore-engine.js"></script>
+<script src="../js/cleancore-ui.js"></script>
+<script src="../js/site.js"></script>
+</body>
+</html>

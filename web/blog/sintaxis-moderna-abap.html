@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doce cambios de sintaxis ABAP que ahorran líneas (y errores) · Abel González Guerra</title>
+<meta name="description" content="Declaraciones en línea, expresiones de constructor, tablas internas con expresiones, string templates y SQL estricto: la sintaxis ABAP moderna con ejemplos antes y después.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Doce cambios de sintaxis ABAP que ahorran líneas (y errores) · Abel González Guerra">
+<meta property="og:description" content="Declaraciones en línea, expresiones de constructor, tablas internas con expresiones, string templates y SQL estricto: la sintaxis ABAP moderna con ejemplos antes y después.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html" class="active" aria-current="page">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Blog</a> / Lenguaje</div>
+    <h1 style="max-width:820px">Doce cambios de sintaxis ABAP que ahorran líneas (y errores)</h1>
+    <p class="article-meta">Abel González Guerra · 8 min de lectura</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px">
+  <div class="wrap article">
+    <p>Desde ABAP 7.40 el lenguaje ha cambiado más que en los quince años anteriores. Todo lo de este artículo funciona en cualquier ECC con 7.40 SP08 o superior y en S/4HANA, así que no hace falta esperar a una migración para usarlo.</p>
+
+    <h3>1. Declaración en línea</h3>
+<pre class="abap"><code><span class="c">" Antes</span>
+<span class="k">DATA</span> lv_count <span class="k">TYPE</span> i.
+lv_count = <span class="k">lines</span>( lt_items ).
+<span class="c">" Ahora</span>
+<span class="k">DATA</span>(lv_count) = <span class="k">lines</span>( lt_items ).</code></pre>
+
+    <h3>2. Field-symbols en línea</h3>
+<pre class="abap"><code><span class="k">LOOP</span> <span class="k">AT</span> lt_items <span class="k">ASSIGNING</span> <span class="k">FIELD-SYMBOL</span>(&lt;ls_item&gt;).
+  &lt;ls_item&gt;-status = <span class="s">'X'</span>.
+<span class="k">ENDLOOP</span>.</code></pre>
+
+    <h3>3. NEW en lugar de CREATE OBJECT</h3>
+<pre class="abap"><code><span class="k">DATA</span>(lo_app) = <span class="k">NEW</span> lcl_app( iv_bukrs = p_bukrs ).</code></pre>
+
+    <h3>4. Llenar tablas con VALUE</h3>
+<pre class="abap"><code><span class="k">DATA</span>(lt_range) = <span class="k">VALUE</span> tt_matnr_range( sign = <span class="s">'I'</span> option = <span class="s">'EQ'</span>
+                                       ( low = <span class="s">'MAT-001'</span> )
+                                       ( low = <span class="s">'MAT-002'</span> ) ).</code></pre>
+
+    <h3>5. Leer una línea con expresión de tabla</h3>
+<pre class="abap"><code><span class="c">" Lanza CX_SY_ITAB_LINE_NOT_FOUND si no existe</span>
+<span class="k">DATA</span>(ls_mat) = lt_materials[ matnr = lv_matnr ].
+<span class="c">" Sin excepción: valor inicial si no existe</span>
+<span class="k">DATA</span>(lv_text) = <span class="k">VALUE</span> #( lt_materials[ matnr = lv_matnr ]-maktx <span class="k">OPTIONAL</span> ).</code></pre>
+
+    <h3>6. Comprobar si existe</h3>
+<pre class="abap"><code><span class="k">IF</span> line_exists( lt_materials[ matnr = lv_matnr ] ).</code></pre>
+
+    <h3>7. Transformar una tabla con FOR</h3>
+<pre class="abap"><code><span class="k">DATA</span>(lt_matnr) = <span class="k">VALUE</span> string_table( <span class="k">FOR</span> ls_m <span class="k">IN</span> lt_materials <span class="k">WHERE</span> ( mtart = <span class="s">'FERT'</span> )
+                                     ( <span class="k">CONV</span> #( ls_m-matnr ) ) ).</code></pre>
+
+    <h3>8. Acumular con REDUCE</h3>
+<pre class="abap"><code><span class="k">DATA</span>(lv_total) = <span class="k">REDUCE</span> netwr( INIT s = <span class="k">CONV</span> netwr( <span class="n">0</span> )
+                               <span class="k">FOR</span> ls_pos <span class="k">IN</span> lt_positions
+                               <span class="k">NEXT</span> s = s + ls_pos-netwr ).</code></pre>
+
+    <h3>9. COND y SWITCH en lugar de IF para asignar</h3>
+<pre class="abap"><code><span class="k">DATA</span>(lv_icon) = <span class="k">COND</span> icon_d( <span class="k">WHEN</span> lv_stock &gt; <span class="n">100</span> <span class="k">THEN</span> icon_green_light
+                             <span class="k">WHEN</span> lv_stock &gt; <span class="n">0</span>   <span class="k">THEN</span> icon_yellow_light
+                             <span class="k">ELSE</span> icon_red_light ).</code></pre>
+
+    <h3>10. CORRESPONDING con mapeo</h3>
+<pre class="abap"><code>ls_out = <span class="k">CORRESPONDING</span> #( ls_vbak <span class="k">MAPPING</span> customer = kunnr
+                                          order    = vbeln
+                                  EXCEPT  ernam ).</code></pre>
+
+    <h3>11. String templates</h3>
+<pre class="abap"><code>lv_msg = <span class="s">|Pedido { lv_ebeln ALPHA = OUT } de { lv_date DATE = USER }: { lv_amount NUMBER = USER } €|</span>.</code></pre>
+    <p>Las opciones de formato (<code>ALPHA</code>, <code>DATE</code>, <code>NUMBER</code>, <code>WIDTH</code>, <code>ALIGN</code>) sustituyen a varias llamadas a módulos de conversión.</p>
+
+    <h3>12. SQL estricto</h3>
+<pre class="abap"><code><span class="k">SELECT</span> <span class="k">FROM</span> vbak
+  <span class="k">FIELDS</span> vbeln, kunnr, netwr,
+         <span class="k">CASE</span> <span class="k">WHEN</span> netwr &gt; <span class="n">10000</span> <span class="k">THEN</span> <span class="s">'A'</span> <span class="k">ELSE</span> <span class="s">'B'</span> <span class="k">END</span> <span class="k">AS</span> <span class="k">class</span>
+  <span class="k">WHERE</span> erdat &gt;= @lv_from
+  ORDER <span class="k">BY</span> netwr <span class="k">DESCENDING</span>
+  <span class="k">INTO</span> <span class="k">TABLE</span> @<span class="k">DATA</span>(lt_orders)
+  <span class="k">UP</span> <span class="k">TO</span> <span class="n">100</span> ROWS.</code></pre>
+    <p>Las comas entre campos y la <code>@</code> delante de las variables ABAP activan la sintaxis estricta, que es la que permite expresiones (<code>CASE</code>, <code>CAST</code>, funciones de cadena y fecha), declaración en línea del destino y <code>FIELDS</code> después de <code>FROM</code>, que hace que el autocompletado de ADT funcione.</p>
+
+    <h2>Lo que no conviene hacer</h2>
+    <p>La sintaxis nueva permite escribir un programa entero en una sola expresión de veinte líneas. No es buena idea. Un <code>VALUE</code> con un <code>FOR</code> anidado dentro de un <code>REDUCE</code> es difícil de depurar porque el depurador lo trata como una sola sentencia. Si una expresión no se entiende de un vistazo, un <code>LOOP</code> clásico con un par de variables auxiliares es mejor código.</p>
+
+    <div class="callout">Todas estas equivalencias, y las de RAP y ABAP Cloud, están en la <a href="../recursos.html">chuleta de ABAP moderno</a> en PDF. Y si quieres modernizar un programa entero, <a href="../herramientas/cleancore-check.html">CleanCore Check</a> aplica automáticamente los cambios seguros.</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script src="../js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!-- {"title": "Doce cambios de sintaxis ABAP que ahorran líneas (y errores)", "description": "Declaraciones en línea, expresiones de constructor, tablas internas con expresiones, string templates y SQL estricto: la sintaxis ABAP moderna con ejemplos antes y después.", "out": "blog/sintaxis-moderna-abap.html", "nav": "blog"} -->
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Blog</a> / Lenguaje</div>
+    <h1 style="max-width:820px">Doce cambios de sintaxis ABAP que ahorran líneas (y errores)</h1>
+    <p class="article-meta">Abel González Guerra · 8 min de lectura</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px">
+  <div class="wrap article">
+    <p>Desde ABAP 7.40 el lenguaje ha cambiado más que en los quince años anteriores. Todo lo de este artículo funciona en cualquier ECC con 7.40 SP08 o superior y en S/4HANA, así que no hace falta esperar a una migración para usarlo.</p>
+
+    <h3>1. Declaración en línea</h3>
+<pre class="abap">
+" Antes
+DATA lv_count TYPE i.
+lv_count = lines( lt_items ).
+" Ahora
+DATA(lv_count) = lines( lt_items ).
+</pre>
+
+    <h3>2. Field-symbols en línea</h3>
+<pre class="abap">
+LOOP AT lt_items ASSIGNING FIELD-SYMBOL(<ls_item>).
+  <ls_item>-status = 'X'.
+ENDLOOP.
+</pre>
+
+    <h3>3. NEW en lugar de CREATE OBJECT</h3>
+<pre class="abap">
+DATA(lo_app) = NEW lcl_app( iv_bukrs = p_bukrs ).
+</pre>
+
+    <h3>4. Llenar tablas con VALUE</h3>
+<pre class="abap">
+DATA(lt_range) = VALUE tt_matnr_range( sign = 'I' option = 'EQ'
+                                       ( low = 'MAT-001' )
+                                       ( low = 'MAT-002' ) ).
+</pre>
+
+    <h3>5. Leer una línea con expresión de tabla</h3>
+<pre class="abap">
+" Lanza CX_SY_ITAB_LINE_NOT_FOUND si no existe
+DATA(ls_mat) = lt_materials[ matnr = lv_matnr ].
+" Sin excepción: valor inicial si no existe
+DATA(lv_text) = VALUE #( lt_materials[ matnr = lv_matnr ]-maktx OPTIONAL ).
+</pre>
+
+    <h3>6. Comprobar si existe</h3>
+<pre class="abap">
+IF line_exists( lt_materials[ matnr = lv_matnr ] ).
+</pre>
+
+    <h3>7. Transformar una tabla con FOR</h3>
+<pre class="abap">
+DATA(lt_matnr) = VALUE string_table( FOR ls_m IN lt_materials WHERE ( mtart = 'FERT' )
+                                     ( CONV #( ls_m-matnr ) ) ).
+</pre>
+
+    <h3>8. Acumular con REDUCE</h3>
+<pre class="abap">
+DATA(lv_total) = REDUCE netwr( INIT s = CONV netwr( 0 )
+                               FOR ls_pos IN lt_positions
+                               NEXT s = s + ls_pos-netwr ).
+</pre>
+
+    <h3>9. COND y SWITCH en lugar de IF para asignar</h3>
+<pre class="abap">
+DATA(lv_icon) = COND icon_d( WHEN lv_stock > 100 THEN icon_green_light
+                             WHEN lv_stock > 0   THEN icon_yellow_light
+                             ELSE icon_red_light ).
+</pre>
+
+    <h3>10. CORRESPONDING con mapeo</h3>
+<pre class="abap">
+ls_out = CORRESPONDING #( ls_vbak MAPPING customer = kunnr
+                                          order    = vbeln
+                                  EXCEPT  ernam ).
+</pre>
+
+    <h3>11. String templates</h3>
+<pre class="abap">
+lv_msg = |Pedido { lv_ebeln ALPHA = OUT } de { lv_date DATE = USER }: { lv_amount NUMBER = USER } €|.
+</pre>
+    <p>Las opciones de formato (<code>ALPHA</code>, <code>DATE</code>, <code>NUMBER</code>, <code>WIDTH</code>, <code>ALIGN</code>) sustituyen a varias llamadas a módulos de conversión.</p>
+
+    <h3>12. SQL estricto</h3>
+<pre class="abap">
+SELECT FROM vbak
+  FIELDS vbeln, kunnr, netwr,
+         CASE WHEN netwr > 10000 THEN 'A' ELSE 'B' END AS class
+  WHERE erdat >= @lv_from
+  ORDER BY netwr DESCENDING
+  INTO TABLE @DATA(lt_orders)
+  UP TO 100 ROWS.
+</pre>
+    <p>Las comas entre campos y la <code>@</code> delante de las variables ABAP activan la sintaxis estricta, que es la que permite expresiones (<code>CASE</code>, <code>CAST</code>, funciones de cadena y fecha), declaración en línea del destino y <code>FIELDS</code> después de <code>FROM</code>, que hace que el autocompletado de ADT funcione.</p>
+
+    <h2>Lo que no conviene hacer</h2>
+    <p>La sintaxis nueva permite escribir un programa entero en una sola expresión de veinte líneas. No es buena idea. Un <code>VALUE</code> con un <code>FOR</code> anidado dentro de un <code>REDUCE</code> es difícil de depurar porque el depurador lo trata como una sola sentencia. Si una expresión no se entiende de un vistazo, un <code>LOOP</code> clásico con un par de variables auxiliares es mejor código.</p>
+
+    <div class="callout">Todas estas equivalencias, y las de RAP y ABAP Cloud, están en la <a href="{{base}}recursos.html">chuleta de ABAP moderno</a> en PDF. Y si quieres modernizar un programa entero, <a href="{{base}}herramientas/cleancore-check.html">CleanCore Check</a> aplica automáticamente los cambios seguros.</div>
+  </div>
+</section>

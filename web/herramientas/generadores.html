@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generadores ABAP: RAP, ALV, tests, excepciones y JSON · Abel González Guerra</title>
+<meta name="description" content="Genera código ABAP en el navegador: Business Object RAP con draft, report ALV completo, esqueleto de tests ABAP Unit, clase de excepción con mensajes T100 y tipos ABAP desde JSON.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Generadores ABAP: RAP, ALV, tests, excepciones y JSON · Abel González Guerra">
+<meta property="og:description" content="Genera código ABAP en el navegador: Business Object RAP con draft, report ALV completo, esqueleto de tests ABAP Unit, clase de excepción con mensajes T100 y tipos ABAP desde JSON.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/tool.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html" class="active" aria-current="page">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / Generadores</div>
+    <h1>Generadores</h1>
+    <p>Código que se repite en cada proyecto y que no aporta nada escribir a mano. Cambia los datos y el código se actualiza al momento. Todo se genera en tu navegador.</p>
+    <p class="small" style="margin-top:10px"><a href="#rap">1. BO RAP</a> · <a href="#json">2. Tipos desde JSON</a> · <a href="#alv">3. Report ALV</a> · <a href="#tests">4. Tests ABAP Unit</a> · <a href="#excepcion">5. Clase de excepción</a></p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px" id="rap">
+  <div class="wrap">
+    <h2>1. Business Object RAP gestionado con draft</h2>
+    <p class="muted" style="max-width:760px">Escribe el prefijo y el nombre de la entidad. Obtienes tabla, vista raíz, proyección, metadata extension, parámetro de acción, BDEF, BDEF de proyección, behavior pool y service definition, con los nombres ya ajustados a las longitudes máximas de SAP.</p>
+
+    <div class="grid" style="grid-template-columns: 320px minmax(0,1fr); gap:24px; align-items:start; margin-top:24px">
+      <div class="card form">
+        <div><label for="rap-prefix">Prefijo del proyecto</label><input id="rap-prefix" value="ABK" maxlength="6"></div>
+        <div><label for="rap-entity">Entidad (en inglés, CamelCase)</label><input id="rap-entity" value="Request" maxlength="20"></div>
+        <div><label for="rap-desc">Descripción</label><input id="rap-desc" value="Solicitud"></div>
+        <div><label for="rap-plural">Descripción en plural</label><input id="rap-plural" value="Solicitudes"></div>
+        <table class="small" style="margin:6px 0 0"><tbody id="rap-names"></tbody></table>
+        <button class="btn btn-secondary btn-small" id="rap-download-all" type="button">Descargar todos (.txt)</button>
+      </div>
+
+      <div style="min-width:0">
+        <div class="filters" id="rap-tabs" style="padding:0 0 12px;border:0"></div>
+        <div class="code-window">
+          <div class="bar"><span id="rap-file"></span>
+            <span><button class="btn btn-secondary btn-small" id="rap-copy" type="button">Copiar</button>
+            <button class="btn btn-secondary btn-small" id="rap-download" type="button">Descargar</button></span>
+          </div>
+          <pre id="rap-code" style="max-height:560px;overflow:auto"></pre>
+        </div>
+        <p class="small muted" style="margin-top:12px">Orden de creación en ADT y explicación de cada parte en la <a href="../biblioteca.html">documentación del ABAP Toolkit</a>. La tabla draft la genera ADT desde la BDEF (Ctrl+1).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="json">
+  <div class="wrap">
+    <h2>2. Tipos ABAP desde JSON</h2>
+    <p class="muted" style="max-width:760px">Pega la respuesta de una API. Se generan las estructuras y tablas anidadas, con los nombres en snake_case para que <code>/ui2/cl_json</code> las rellene en modo camelCase, y el código para deserializar.</p>
+
+    <div class="grid grid-2" style="margin-top:24px">
+      <div class="card form" style="min-width:0">
+        <div class="row-2">
+          <div><label for="json-name">Nombre del tipo raíz</label><input id="json-name" value="response"></div>
+          <div style="align-self:end"><button class="btn btn-secondary btn-small" id="json-example" type="button">Ejemplo: pedido de compra</button></div>
+        </div>
+        <div><label for="json-in">JSON</label><textarea id="json-in" spellcheck="false" style="min-height:420px;font-family:var(--mono);font-size:12.5px"></textarea></div>
+        <div class="small" id="json-err" style="color:var(--err)"></div>
+      </div>
+      <div style="min-width:0">
+        <div class="code-window">
+          <div class="bar"><span>Tipos ABAP</span><button class="btn btn-secondary btn-small" id="json-copy" type="button">Copiar</button></div>
+          <pre id="json-out" style="max-height:560px;overflow:auto"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="alv">
+  <div class="wrap">
+    <h2>3. Report ALV completo</h2>
+    <p class="muted" style="max-width:760px">Para ECC y S/4HANA on-premise. Indica la tabla, los campos a mostrar y los que quieres como criterio de selección. Genera el report con clase local, SELECT con sintaxis moderna, ALV con funciones, columnas optimizadas, cebra y variantes guardables.</p>
+    <div class="grid" style="grid-template-columns: 320px minmax(0,1fr); gap:24px; align-items:start; margin-top:24px">
+      <div class="card form">
+        <div><label for="alv-report">Nombre del report</label><input id="alv-report" value="zr_materiales_por_tipo"></div>
+        <div><label for="alv-table">Tabla o vista</label><input id="alv-table" value="mara"></div>
+        <div><label for="alv-fields">Campos a mostrar</label><input id="alv-fields" value="matnr, mtart, matkl, meins, ersda, ernam"></div>
+        <div><label for="alv-sel">Campos de selección</label><input id="alv-sel" value="matnr, mtart, ersda"></div>
+        <div><label for="alv-title">Título</label><input id="alv-title" value="Materiales por tipo"></div>
+        <div><label for="alv-max">Máximo de filas (0 = sin límite)</label><input id="alv-max" type="number" value="5000"></div>
+      </div>
+      <div class="code-window" style="min-width:0">
+        <div class="bar"><span>Report</span><button class="btn btn-secondary btn-small" id="alv-copy" type="button">Copiar</button></div>
+        <pre id="alv-out" style="max-height:620px;overflow:auto"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="tests">
+  <div class="wrap">
+    <h2>4. Esqueleto de tests ABAP Unit</h2>
+    <p class="muted" style="max-width:760px">Pega la definición de una clase (desde <code>CLASS ... DEFINITION</code> hasta <code>ENDCLASS</code>). Genera la clase de test local con un método de prueba por cada método público, la instancia de la clase en <code>setup</code> y la estructura Dado / Cuando / Entonces con los parámetros ya declarados.</p>
+    <div class="grid grid-2" style="margin-top:24px;align-items:start">
+      <div class="card form" style="min-width:0">
+        <label for="ut-in">Definición de la clase</label>
+        <textarea id="ut-in" spellcheck="false" style="min-height:420px;font-family:var(--mono);font-size:12.5px">CLASS zcl_price_calculator DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS calculate_total
+      IMPORTING iv_quantity TYPE i
+                iv_price    TYPE netpr
+                iv_discount TYPE p OPTIONAL
+      RETURNING VALUE(rv_total) TYPE netwr
+      RAISING   zcx_price_error.
+
+    METHODS is_valid_item
+      IMPORTING is_item      TYPE zs_order_item
+      RETURNING VALUE(rv_ok) TYPE abap_bool.
+
+    CLASS-METHODS round_to_cents
+      CHANGING cv_amount TYPE netwr.
+
+  PRIVATE SECTION.
+    DATA mv_currency TYPE waers.
+ENDCLASS.</textarea>
+      </div>
+      <div class="code-window" style="min-width:0">
+        <div class="bar"><span>Test Classes</span><button class="btn btn-secondary btn-small" id="ut-copy" type="button">Copiar</button></div>
+        <pre id="ut-out" style="max-height:560px;overflow:auto"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="excepcion">
+  <div class="wrap">
+    <h2>5. Clase de excepción con mensajes T100</h2>
+    <p class="muted" style="max-width:760px">Una línea por mensaje con el formato <code>constante;número;texto</code>. Usa <code>&amp;1</code> a <code>&amp;4</code> para los valores variables. Genera la clase con <code>IF_T100_DYN_MSG</code>, una constante por mensaje, los atributos necesarios y la lista de mensajes que hay que crear en SE91.</p>
+    <div class="grid" style="grid-template-columns: 340px minmax(0,1fr); gap:24px; align-items:start; margin-top:24px">
+      <div class="card form">
+        <div><label for="cx-name">Nombre de la clase</label><input id="cx-name" value="zcx_mm_error"></div>
+        <div><label for="cx-msgid">Clase de mensajes (SE91)</label><input id="cx-msgid" value="ZMM"></div>
+        <div>
+          <label for="cx-base">Hereda de</label>
+          <select id="cx-base">
+            <option value="cx_static_check">cx_static_check (hay que declararla o capturarla)</option>
+            <option value="cx_dynamic_check">cx_dynamic_check (comprobación en ejecución)</option>
+            <option value="cx_no_check">cx_no_check (no se declara)</option>
+          </select>
+        </div>
+        <div><label for="cx-msgs">Mensajes</label><textarea id="cx-msgs" spellcheck="false" style="min-height:150px;font-family:var(--mono);font-size:12px">material_not_found;001;El material &1 no existe
+plant_blocked;002;El centro &1 está bloqueado para &2
+quantity_invalid;003;La cantidad &1 no es válida</textarea></div>
+      </div>
+      <div class="code-window" style="min-width:0">
+        <div class="bar"><span>Clase de excepción</span><button class="btn btn-secondary btn-small" id="cx-copy" type="button">Copiar</button></div>
+        <pre id="cx-out" style="max-height:620px;overflow:auto"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/abap-highlight.js"></script>
+<script src="../js/rap-templates.js"></script>
+<script src="../js/generadores-ui.js"></script>
+<script src="../js/generadores-extra.js"></script>
+<script src="../js/site.js"></script>
+</body>
+</html>

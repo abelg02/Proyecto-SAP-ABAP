@@ -1,0 +1,155 @@
+<!-- {"title": "ABAP Toolkit: biblioteca gratuita de clases ABAP", "description": "Biblioteca gratuita (MIT) de clases ABAP: application log, email, cliente REST, JSON, Excel, Application Jobs, mensajes RAP, ALV, BAPIs, ficheros, textos largos y plantilla de BO RAP. Instalable con abapGit.", "out": "biblioteca.html", "nav": "biblioteca"} -->
+
+<section class="page-head">
+  <div class="wrap project-feature" style="align-items:center">
+    <div>
+      <p class="eyebrow">Gratis · código abierto (MIT)</p>
+      <h1>ABAP Toolkit</h1>
+      <p class="lead">Las clases que acabas escribiendo en cada proyecto, ya escritas, documentadas y con ejemplos. Un paquete para ABAP Cloud y otro para ECC y S/4HANA on-premise. Descárgalas, instálalas con abapGit y úsalas donde quieras, también en tu empresa.</p>
+      <p style="margin-top:22px"><a class="btn" href="#descargas">Descargar</a> <a class="btn btn-secondary" href="#contenido">Qué incluye</a></p>
+    </div>
+<pre class="abap">
+zcl_abk_mail=>new( )->from( `noreply@empresa.com` )
+                     ->to( `compras@empresa.com` )
+                     ->subject( |Pedido { lv_ebeln } aprobado| )
+                     ->html_body( lv_html )
+                     ->attach( iv_content   = lv_pdf
+                               iv_filename  = `pedido.pdf`
+                               iv_mime_type = `application/pdf` )
+                     ->send( ).
+</pre>
+  </div>
+</section>
+
+<section class="section" id="descargas">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Descargas</h2>
+      <p>Cada ZIP se importa con abapGit (<em>New Offline</em> &gt; importar ZIP) en el paquete que elijas.</p>
+    </div>
+    <div class="grid grid-4">
+      <div class="card">
+        <h3>Paquete ABAP Cloud</h3>
+        <p class="muted small">12 objetos + plantilla RAP. BTP, S/4HANA Cloud y clean core.</p>
+        <a class="btn btn-small" href="descargas/ABAP-Toolkit-Cloud.zip" download>Descargar ZIP</a>
+      </div>
+      <div class="card">
+        <h3>Paquete clásico</h3>
+        <p class="muted small">8 objetos. ECC 6.0 (7.40+) y S/4HANA on-premise.</p>
+        <a class="btn btn-small" href="descargas/ABAP-Toolkit-Clasico.zip" download>Descargar ZIP</a>
+      </div>
+      <div class="card">
+        <h3>Todo junto</h3>
+        <p class="muted small">Los dos paquetes con la documentación.</p>
+        <a class="btn btn-small" href="descargas/ABAP-Toolkit-Completo.zip" download>Descargar ZIP</a>
+      </div>
+      <div class="card">
+        <h3>Plantilla RAP</h3>
+        <p class="muted small">BO gestionado con draft: 9 ficheros con marcadores y un ejemplo.</p>
+        <a class="btn btn-small" href="descargas/Plantilla-RAP-managed-draft.zip" download>Descargar ZIP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="contenido">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Qué incluye</h2>
+      <p>Cada clase lleva en la cabecera para qué sirve, los requisitos previos y un ejemplo que se puede copiar.</p>
+    </div>
+    <div class="grid grid-2">
+      <div>
+        <h3>Paquete ABAP Cloud <span class="tag tag-blue">solo APIs liberadas</span></h3>
+        <table>
+          <tbody>
+            <tr><td><code>ZCL_ABK_LOG</code></td><td>Application log con CL_BALI en tres líneas, asociado al job si se ejecuta en fondo</td></tr>
+            <tr><td><code>ZCL_ABK_MAIL</code></td><td>Email con interfaz encadenada, HTML, CC, BCC y adjuntos</td></tr>
+            <tr><td><code>ZCL_ABK_HTTP</code></td><td>Cliente REST por URL, destino de BTP o communication arrangement</td></tr>
+            <tr><td><code>ZCL_ABK_JSON</code></td><td>JSON con /UI2/CL_JSON con las opciones correctas y lectura por ruta</td></tr>
+            <tr><td><code>ZCL_ABK_XLSX</code></td><td>Leer y escribir Excel (XLSX) con XCO</td></tr>
+            <tr><td><code>ZCL_ABK_APPJOB_TEMPLATE</code></td><td>Plantilla de Application Job con parámetros y log</td></tr>
+            <tr><td><code>ZCX_ABK_RAP_MESSAGE</code></td><td>Mensajes para REPORTED con severidad</td></tr>
+            <tr><td><code>ZCL_ABK_CONTEXT</code></td><td>Fecha, hora, usuario y zona horaria sin campos sy-</td></tr>
+            <tr><td><code>ZCL_ABK_NUMBER_RANGE</code></td><td>Rangos de números en lugar de MAX + 1</td></tr>
+            <tr><td><code>ZCL_ABK_STRING</code></td><td>Email, ALPHA, acentos, CSV con comillas, días laborables. 11 tests unitarios</td></tr>
+            <tr><td><code>ZCL_ABK_ITAB</code></td><td>Patrones de GROUP BY, REDUCE y rangos, ejecutable con F9</td></tr>
+            <tr><td><code>ZCL_ABK_SQL_TEST_DEMO</code></td><td>Plantilla de tests con dobles de tabla y de vista CDS</td></tr>
+            <tr><td>Plantilla RAP</td><td>9 ficheros de un BO gestionado con draft</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>Paquete ABAP clásico <span class="tag">ECC 6.0 (7.40+) y S/4HANA</span></h3>
+        <table>
+          <tbody>
+            <tr><td><code>ZCL_ABK_SALV</code></td><td>ALV en una llamada: funciones, textos, totales, hotspot, variantes</td></tr>
+            <tr><td><code>ZCL_ABK_BAPI</code></td><td>BAPIRET2: COMMIT AND WAIT solo si no hay errores, si no ROLLBACK</td></tr>
+            <tr><td><code>ZCL_ABK_FILE</code></td><td>CSV del PC y del servidor, a tabla interna y de vuelta</td></tr>
+            <tr><td><code>ZCL_ABK_EXCEL_UPLOAD</code></td><td>Subir un XLSX del PC a una tabla interna sin Excel instalado</td></tr>
+            <tr><td><code>ZCL_ABK_LONGTEXT</code></td><td>Textos largos (READ_TEXT / SAVE_TEXT) como string</td></tr>
+            <tr><td><code>ZCL_ABK_JOB</code></td><td>Lanzar un report Z en fondo con variante o parámetros</td></tr>
+            <tr><td><code>ZCL_ABK_BAL</code></td><td>SLG1 con textos, mensajes, BAPIRET2 y excepciones encadenadas</td></tr>
+            <tr><td><code>ZABK_R_CARGA_CSV</code></td><td>Report de ejemplo que combina todo: fichero, validación, BAPI, log y ALV</td></tr>
+          </tbody>
+        </table>
+        <div class="callout" style="margin-top:20px">Todo el código pasa <a href="herramientas/cleancore-check.html">CleanCore Check</a> sin errores ni avisos y está escrito sin FORM, sin cabeceras de tabla y sin SELECT dentro de bucles.</div>
+        <div class="callout callout-warn">El código no se ha activado todavía en un sistema SAP. Si tu versión pide algún ajuste (un nombre de parámetro, un tipo), suele ser cosa de minutos. Pruébalo en desarrollo antes de transportarlo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap grid grid-2" style="align-items:start">
+    <div>
+      <h2>Ejemplo: log de aplicación en ABAP Cloud</h2>
+      <p class="muted">Sin la clase, guardar un log con CL_BALI_LOG son unas quince líneas con tres clases distintas y un TRY por cada mensaje. Con la clase:</p>
+<pre class="abap">
+DATA(lo_log) = zcl_abk_log=>create( iv_object      = 'ZABK_LOG'
+                                    iv_subobject   = 'IMPORT'
+                                    iv_external_id = |Fichero { lv_name }| ).
+
+lo_log->info( |Leídas { lines( lt_rows ) } filas| ).
+
+LOOP AT lt_rows INTO DATA(ls_row) WHERE supplier IS INITIAL.
+  lo_log->error( |Fila { sy-tabix }: proveedor vacío| ).
+ENDLOOP.
+
+lo_log->save( ).
+</pre>
+    </div>
+    <div>
+      <h2>Ejemplo: BAPI con control de errores</h2>
+      <p class="muted">El error más habitual con BAPIs es hacer COMMIT aunque RETURN traiga un error. La clase decide por ti:</p>
+<pre class="abap">
+CALL FUNCTION 'BAPI_PO_CHANGE'
+  EXPORTING purchaseorder = lv_ebeln
+  TABLES    return        = lt_return
+            poitem        = lt_item
+            poitemx       = lt_itemx.
+
+DATA(lo_result) = zcl_abk_bapi=>finish( lt_return ).
+
+IF lo_result->is_ok( ).
+  MESSAGE s001(zmm) WITH lv_ebeln.
+ELSE.
+  lo_log->add_bapiret2( lo_result->errors( ) ).
+ENDIF.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap narrow">
+    <h2>Instalación con abapGit</h2>
+    <ol>
+      <li>Crea un paquete local o transportable (por ejemplo <code>ZABK_CLOUD</code>).</li>
+      <li>En abapGit (ADT en ABAP Cloud, report <code>ZABAPGIT</code> on-premise) elige <strong>New Offline</strong>, asigna el paquete e importa el ZIP.</li>
+      <li>Pulsa <strong>Pull</strong> y activa los objetos.</li>
+      <li>Crea los requisitos de las clases que vayas a usar (objeto de log, clase de mensajes, rango de números...). Están en la cabecera de cada clase.</li>
+    </ol>
+    <p>Si prefieres no usar abapGit, abre el ZIP y copia cada fichero <code>.abap</code> en una clase con el mismo nombre.</p>
+  </div>
+</section>

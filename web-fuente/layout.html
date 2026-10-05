@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<meta name="author" content="{{site.name}}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:image" content="{{og_image}}">
+<link rel="icon" href="{{base}}img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{base}}css/site.css">
+{{styles}}
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="{{base}}index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">{{site.name}}<span>{{site.role}}</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        {{nav}}
+        <a class="btn btn-small" href="{{site.github}}" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+{{body}}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>{{site.name}}</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="{{base}}herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="{{base}}herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="{{base}}herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="{{base}}herramientas/generadores.html">Generadores</a></li>
+          <li><a href="{{base}}herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="{{base}}biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="{{base}}proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="{{base}}blog/index.html">Blog</a></li>
+          <li><a href="{{base}}recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="{{site.github}}" rel="noopener">GitHub</a></li>
+          <li><a href="{{base}}sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© {{year}} {{site.name}} · Uso gratuito</span>
+      <span><a href="{{base}}legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+{{scripts}}
+<script src="{{base}}js/site.js"></script>
+</body>
+</html>

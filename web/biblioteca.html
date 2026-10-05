@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ABAP Toolkit: biblioteca gratuita de clases ABAP · Abel González Guerra</title>
+<meta name="description" content="Biblioteca gratuita (MIT) de clases ABAP: application log, email, cliente REST, JSON, Excel, Application Jobs, mensajes RAP, ALV, BAPIs, ficheros, textos largos y plantilla de BO RAP. Instalable con abapGit.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ABAP Toolkit: biblioteca gratuita de clases ABAP · Abel González Guerra">
+<meta property="og:description" content="Biblioteca gratuita (MIT) de clases ABAP: application log, email, cliente REST, JSON, Excel, Application Jobs, mensajes RAP, ALV, BAPIs, ficheros, textos largos y plantilla de BO RAP. Instalable con abapGit.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="herramientas/index.html">Herramientas</a>
+        <a href="biblioteca.html" class="active" aria-current="page">Biblioteca</a>
+        <a href="proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="blog/index.html">Blog</a>
+        <a href="recursos.html">Recursos</a>
+        <a href="sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="page-head">
+  <div class="wrap project-feature" style="align-items:center">
+    <div>
+      <p class="eyebrow">Gratis · código abierto (MIT)</p>
+      <h1>ABAP Toolkit</h1>
+      <p class="lead">Las clases que acabas escribiendo en cada proyecto, ya escritas, documentadas y con ejemplos. Un paquete para ABAP Cloud y otro para ECC y S/4HANA on-premise. Descárgalas, instálalas con abapGit y úsalas donde quieras, también en tu empresa.</p>
+      <p style="margin-top:22px"><a class="btn" href="#descargas">Descargar</a> <a class="btn btn-secondary" href="#contenido">Qué incluye</a></p>
+    </div>
+<pre class="abap"><code>zcl_abk_mail=&gt;new( )-&gt;from( <span class="s">`noreply@empresa.com`</span> )
+                     -&gt;to( <span class="s">`compras@empresa.com`</span> )
+                     -&gt;subject( <span class="s">|Pedido { lv_ebeln } aprobado|</span> )
+                     -&gt;html_body( lv_html )
+                     -&gt;attach( iv_content   = lv_pdf
+                               iv_filename  = <span class="s">`pedido.pdf`</span>
+                               iv_mime_type = <span class="s">`application/pdf`</span> )
+                     -&gt;send( ).</code></pre>
+  </div>
+</section>
+
+<section class="section" id="descargas">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Descargas</h2>
+      <p>Cada ZIP se importa con abapGit (<em>New Offline</em> &gt; importar ZIP) en el paquete que elijas.</p>
+    </div>
+    <div class="grid grid-4">
+      <div class="card">
+        <h3>Paquete ABAP Cloud</h3>
+        <p class="muted small">12 objetos + plantilla RAP. BTP, S/4HANA Cloud y clean core.</p>
+        <a class="btn btn-small" href="descargas/ABAP-Toolkit-Cloud.zip" download>Descargar ZIP</a>
+      </div>
+      <div class="card">
+        <h3>Paquete clásico</h3>
+        <p class="muted small">8 objetos. ECC 6.0 (7.40+) y S/4HANA on-premise.</p>
+        <a class="btn btn-small" href="descargas/ABAP-Toolkit-Clasico.zip" download>Descargar ZIP</a>
+      </div>
+      <div class="card">
+        <h3>Todo junto</h3>
+        <p class="muted small">Los dos paquetes con la documentación.</p>
+        <a class="btn btn-small" href="descargas/ABAP-Toolkit-Completo.zip" download>Descargar ZIP</a>
+      </div>
+      <div class="card">
+        <h3>Plantilla RAP</h3>
+        <p class="muted small">BO gestionado con draft: 9 ficheros con marcadores y un ejemplo.</p>
+        <a class="btn btn-small" href="descargas/Plantilla-RAP-managed-draft.zip" download>Descargar ZIP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="contenido">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Qué incluye</h2>
+      <p>Cada clase lleva en la cabecera para qué sirve, los requisitos previos y un ejemplo que se puede copiar.</p>
+    </div>
+    <div class="grid grid-2">
+      <div>
+        <h3>Paquete ABAP Cloud <span class="tag tag-blue">solo APIs liberadas</span></h3>
+        <table>
+          <tbody>
+            <tr><td><code>ZCL_ABK_LOG</code></td><td>Application log con CL_BALI en tres líneas, asociado al job si se ejecuta en fondo</td></tr>
+            <tr><td><code>ZCL_ABK_MAIL</code></td><td>Email con interfaz encadenada, HTML, CC, BCC y adjuntos</td></tr>
+            <tr><td><code>ZCL_ABK_HTTP</code></td><td>Cliente REST por URL, destino de BTP o communication arrangement</td></tr>
+            <tr><td><code>ZCL_ABK_JSON</code></td><td>JSON con /UI2/CL_JSON con las opciones correctas y lectura por ruta</td></tr>
+            <tr><td><code>ZCL_ABK_XLSX</code></td><td>Leer y escribir Excel (XLSX) con XCO</td></tr>
+            <tr><td><code>ZCL_ABK_APPJOB_TEMPLATE</code></td><td>Plantilla de Application Job con parámetros y log</td></tr>
+            <tr><td><code>ZCX_ABK_RAP_MESSAGE</code></td><td>Mensajes para REPORTED con severidad</td></tr>
+            <tr><td><code>ZCL_ABK_CONTEXT</code></td><td>Fecha, hora, usuario y zona horaria sin campos sy-</td></tr>
+            <tr><td><code>ZCL_ABK_NUMBER_RANGE</code></td><td>Rangos de números en lugar de MAX + 1</td></tr>
+            <tr><td><code>ZCL_ABK_STRING</code></td><td>Email, ALPHA, acentos, CSV con comillas, días laborables. 11 tests unitarios</td></tr>
+            <tr><td><code>ZCL_ABK_ITAB</code></td><td>Patrones de GROUP BY, REDUCE y rangos, ejecutable con F9</td></tr>
+            <tr><td><code>ZCL_ABK_SQL_TEST_DEMO</code></td><td>Plantilla de tests con dobles de tabla y de vista CDS</td></tr>
+            <tr><td>Plantilla RAP</td><td>9 ficheros de un BO gestionado con draft</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3>Paquete ABAP clásico <span class="tag">ECC 6.0 (7.40+) y S/4HANA</span></h3>
+        <table>
+          <tbody>
+            <tr><td><code>ZCL_ABK_SALV</code></td><td>ALV en una llamada: funciones, textos, totales, hotspot, variantes</td></tr>
+            <tr><td><code>ZCL_ABK_BAPI</code></td><td>BAPIRET2: COMMIT AND WAIT solo si no hay errores, si no ROLLBACK</td></tr>
+            <tr><td><code>ZCL_ABK_FILE</code></td><td>CSV del PC y del servidor, a tabla interna y de vuelta</td></tr>
+            <tr><td><code>ZCL_ABK_EXCEL_UPLOAD</code></td><td>Subir un XLSX del PC a una tabla interna sin Excel instalado</td></tr>
+            <tr><td><code>ZCL_ABK_LONGTEXT</code></td><td>Textos largos (READ_TEXT / SAVE_TEXT) como string</td></tr>
+            <tr><td><code>ZCL_ABK_JOB</code></td><td>Lanzar un report Z en fondo con variante o parámetros</td></tr>
+            <tr><td><code>ZCL_ABK_BAL</code></td><td>SLG1 con textos, mensajes, BAPIRET2 y excepciones encadenadas</td></tr>
+            <tr><td><code>ZABK_R_CARGA_CSV</code></td><td>Report de ejemplo que combina todo: fichero, validación, BAPI, log y ALV</td></tr>
+          </tbody>
+        </table>
+        <div class="callout" style="margin-top:20px">Todo el código pasa <a href="herramientas/cleancore-check.html">CleanCore Check</a> sin errores ni avisos y está escrito sin FORM, sin cabeceras de tabla y sin SELECT dentro de bucles.</div>
+        <div class="callout callout-warn">El código no se ha activado todavía en un sistema SAP. Si tu versión pide algún ajuste (un nombre de parámetro, un tipo), suele ser cosa de minutos. Pruébalo en desarrollo antes de transportarlo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap grid grid-2" style="align-items:start">
+    <div>
+      <h2>Ejemplo: log de aplicación en ABAP Cloud</h2>
+      <p class="muted">Sin la clase, guardar un log con CL_BALI_LOG son unas quince líneas con tres clases distintas y un TRY por cada mensaje. Con la clase:</p>
+<pre class="abap"><code><span class="k">DATA</span>(lo_log) = zcl_abk_log=&gt;create( iv_object      = <span class="s">'ZABK_LOG'</span>
+                                    iv_subobject   = <span class="s">'IMPORT'</span>
+                                    iv_external_id = <span class="s">|Fichero { lv_name }|</span> ).
+
+lo_log-&gt;info( <span class="s">|Leídas { lines( lt_rows ) } filas|</span> ).
+
+<span class="k">LOOP</span> <span class="k">AT</span> lt_rows <span class="k">INTO</span> <span class="k">DATA</span>(ls_row) <span class="k">WHERE</span> supplier <span class="k">IS</span> <span class="k">INITIAL</span>.
+  lo_log-&gt;error( <span class="s">|Fila { sy-tabix }: proveedor vacío|</span> ).
+<span class="k">ENDLOOP</span>.
+
+lo_log-&gt;save( ).</code></pre>
+    </div>
+    <div>
+      <h2>Ejemplo: BAPI con control de errores</h2>
+      <p class="muted">El error más habitual con BAPIs es hacer COMMIT aunque RETURN traiga un error. La clase decide por ti:</p>
+<pre class="abap"><code><span class="k">CALL</span> <span class="k">FUNCTION</span> <span class="s">'BAPI_PO_CHANGE'</span>
+  <span class="k">EXPORTING</span> purchaseorder = lv_ebeln
+  <span class="k">TABLES</span>    <span class="k">return</span>        = lt_return
+            poitem        = lt_item
+            poitemx       = lt_itemx.
+
+<span class="k">DATA</span>(lo_result) = zcl_abk_bapi=&gt;finish( lt_return ).
+
+<span class="k">IF</span> lo_result-&gt;is_ok( ).
+  MESSAGE s001(zmm) <span class="k">WITH</span> lv_ebeln.
+<span class="k">ELSE</span>.
+  lo_log-&gt;add_bapiret2( lo_result-&gt;errors( ) ).
+<span class="k">ENDIF</span>.</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap narrow">
+    <h2>Instalación con abapGit</h2>
+    <ol>
+      <li>Crea un paquete local o transportable (por ejemplo <code>ZABK_CLOUD</code>).</li>
+      <li>En abapGit (ADT en ABAP Cloud, report <code>ZABAPGIT</code> on-premise) elige <strong>New Offline</strong>, asigna el paquete e importa el ZIP.</li>
+      <li>Pulsa <strong>Pull</strong> y activa los objetos.</li>
+      <li>Crea los requisitos de las clases que vayas a usar (objeto de log, clase de mensajes, rango de números...). Están en la cabecera de cada clase.</li>
+    </ol>
+    <p>Si prefieres no usar abapGit, abre el ZIP y copia cada fichero <code>.abap</code> en una clase con el mismo nombre.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="herramientas/generadores.html">Generadores</a></li>
+          <li><a href="herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="blog/index.html">Blog</a></li>
+          <li><a href="recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script src="js/site.js"></script>
+</body>
+</html>

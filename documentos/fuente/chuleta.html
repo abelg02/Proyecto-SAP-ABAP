@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Chuleta de ABAP moderno</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Public Sans", Arial, sans-serif; color: #1c2530; font-size: 8.6pt; line-height: 1.38; }
+  em, i { font-style: normal; }
+  .page { width: 210mm; height: 297mm; padding: 11mm 11mm 14mm; position: relative; page-break-after: always; overflow: hidden; display: flex; flex-direction: column; }
+  .page:last-child { page-break-after: auto; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #15202b; padding-bottom: 5px; margin-bottom: 8px; }
+  header h1 { font-size: 15pt; margin: 0; letter-spacing: -0.01em; }
+  header .sub { font-size: 8pt; color: #5b6675; }
+  header .pg { font-family: "JetBrains Mono", monospace; font-size: 7.5pt; color: #5b6675; }
+  .cols { column-count: 2; column-gap: 7mm; column-fill: auto; flex: 1; min-height: 0; }
+  h2 { font-size: 9.6pt; margin: 8px 0 4px; padding: 2px 6px; background: #15202b; color: #fff; border-radius: 2px; break-after: avoid; }
+  h3 { font-size: 8.4pt; margin: 6px 0 2px; color: #0a5cad; break-after: avoid; }
+  p { margin: 0 0 4px; }
+  pre { font-family: "JetBrains Mono", monospace; font-size: 6.9pt; line-height: 1.4; background: #f6f8fa; border: 1px solid #e3e7ec; border-radius: 3px; padding: 4px 6px; margin: 0 0 5px; white-space: pre-wrap; word-break: break-word; overflow: hidden; break-inside: avoid; font-variant-ligatures: none; }
+  code { font-family: "JetBrains Mono", monospace; font-size: 7.3pt; font-variant-ligatures: none; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 6px; break-inside: avoid; }
+  td, th { border-bottom: 1px solid #e3e7ec; padding: 2px 4px; vertical-align: top; text-align: left; }
+  th { font-size: 7pt; text-transform: uppercase; letter-spacing: .04em; color: #5b6675; background: #f5f7f9; }
+  td code { font-size: 7pt; }
+  td.old code { color: #8f1c13; }
+  td.new code { color: #155c33; }
+  .note { font-size: 7.6pt; color: #4a5665; border-left: 2px solid #0a5cad; padding: 1px 6px; margin: 2px 0 6px; break-inside: avoid; }
+  .k { color: #0550ae; font-weight: 500; } .s { color: #116329; } .c { color: #6e7781; } .n { color: #953800; }
+  footer { position: absolute; left: 11mm; right: 11mm; bottom: 6mm; display: flex; justify-content: space-between; font-size: 7pt; color: #8a96a3; border-top: 1px solid #e3e7ec; padding-top: 3px; }
+  .cover-box { border: 1px solid #c9d1da; border-radius: 4px; padding: 6px 8px; margin-bottom: 8px; display: flex; gap: 14px; font-size: 7.8pt; color: #4a5665; }
+  .cover-box b { color: #1c2530; }
+</style>
+</head>
+<body>
+
+<!-- ============================== PÁGINA 1 ============================== -->
+<section class="page">
+  <header>
+    <div><h1>Chuleta de ABAP moderno</h1><div class="sub">Sintaxis 7.40+ · ABAP SQL · RAP / EML · ABAP Cloud</div></div>
+    <div class="pg">1 / 4</div>
+  </header>
+  <div class="cover-box">
+    <span><b>Rojo:</b> sintaxis antigua u obsoleta</span>
+    <span><b>Verde:</b> equivalente actual</span>
+    <span><b>Válido en:</b> ECC 7.40 SP08+, S/4HANA, BTP ABAP Environment (salvo lo marcado)</span>
+  </div>
+  <div class="cols">
+    <h2>Antes y ahora</h2>
+    <table>
+      <tr><th>Antes</th><th>Ahora</th></tr>
+      <tr><td class="old"><code>DATA lv TYPE i.<br>lv = lines( lt ).</code></td><td class="new"><code>DATA(lv) = lines( lt ).</code></td></tr>
+      <tr><td class="old"><code>MOVE a TO b.</code></td><td class="new"><code>b = a.</code></td></tr>
+      <tr><td class="old"><code>ADD 1 TO lv_n.</code></td><td class="new"><code>lv_n += 1.</code> (7.54+)</td></tr>
+      <tr><td class="old"><code>CREATE OBJECT lo.</code></td><td class="new"><code>lo = NEW #( ).</code></td></tr>
+      <tr><td class="old"><code>CALL METHOD lo->run<br>  EXPORTING iv = 1.</code></td><td class="new"><code>lo->run( iv = 1 ).</code></td></tr>
+      <tr><td class="old"><code>REFRESH lt.</code></td><td class="new"><code>CLEAR lt.</code></td></tr>
+      <tr><td class="old"><code>DESCRIBE TABLE lt<br>  LINES lv.</code></td><td class="new"><code>lv = lines( lt ).</code></td></tr>
+      <tr><td class="old"><code>READ TABLE lt INTO ls<br>  WITH KEY id = 1.</code></td><td class="new"><code>ls = lt[ id = 1 ].</code></td></tr>
+      <tr><td class="old"><code>READ TABLE ... TRANSPORTING<br>  NO FIELDS. IF sy-subrc = 0.</code></td><td class="new"><code>IF line_exists( lt[ id = 1 ] ).</code></td></tr>
+      <tr><td class="old"><code>CONCATENATE a b INTO c<br>  SEPARATED BY space.</code></td><td class="new"><code>c = |{ a } { b }|.</code></td></tr>
+      <tr><td class="old"><code>MOVE-CORRESPONDING a TO b.</code></td><td class="new"><code>b = CORRESPONDING #( a ).</code></td></tr>
+      <tr><td class="old"><code>RANGES r FOR mara-matnr.</code></td><td class="new"><code>DATA r TYPE RANGE OF matnr.</code></td></tr>
+      <tr><td class="old"><code>DATA lt TYPE TABLE OF x<br>  WITH HEADER LINE.</code></td><td class="new"><code>DATA lt TYPE STANDARD TABLE<br>  OF x WITH EMPTY KEY.</code></td></tr>
+      <tr><td class="old"><code>FORM / PERFORM</code></td><td class="new"><code>CLASS lcl ... METHODS</code></td></tr>
+      <tr><td class="old"><code>CONVERSION_EXIT_ALPHA_INPUT</code></td><td class="new"><code>|{ lv ALPHA = IN }|</code></td></tr>
+    </table>
+
+    <h2>Declaraciones en línea</h2>
+<pre class="abap">
+DATA(lv_name)  = `Pedido`.                 " string
+DATA(lv_count) = 0.                        " i
+LOOP AT lt INTO DATA(ls).                  " estructura
+LOOP AT lt ASSIGNING FIELD-SYMBOL(<ls>).   " field-symbol
+LOOP AT lt REFERENCE INTO DATA(lr).        " referencia
+SELECT ... INTO TABLE @DATA(lt_res).       " tabla de resultados
+CATCH cx_root INTO DATA(lx).               " excepción
+</pre>
+    <div class="note"><code>FINAL( )</code> (7.57+) declara una variable inmutable: <code>FINAL(lv_max) = 100.</code></div>
+
+    <h2>Expresiones de constructor</h2>
+    <h3>VALUE: estructuras y tablas</h3>
+<pre class="abap">
+DATA(ls_addr) = VALUE ty_addr( city = 'Sevilla' zip = '41001' ).
+DATA(lt_ids)  = VALUE int4_table( ( 1 ) ( 2 ) ( 3 ) ).
+lt_range = VALUE #( sign = 'I' option = 'EQ'
+                    ( low = 'A' ) ( low = 'B' ) ).
+lt_all = VALUE #( BASE lt_all ( ls_new ) ).   " añade sin perder
+</pre>
+    <h3>NEW, CONV, REF, CAST, EXACT</h3>
+<pre class="abap">
+DATA(lo)   = NEW zcl_app( iv_mode = 1 ).
+DATA(lr)   = NEW ty_struct( id = 1 ).          " referencia a dato
+lv_dec     = CONV decfloat34( lv_text ).
+DATA(lo_d) = CAST zif_doc( lo_obj ).
+lv_p       = EXACT #( lv_float ).              " error si se pierde precisión
+</pre>
+    <h3>COND y SWITCH</h3>
+<pre class="abap">
+DATA(lv_txt) = COND string( WHEN lv_q > 100 THEN `Alto`
+                            WHEN lv_q > 0   THEN `Bajo`
+                            ELSE `Sin stock` ).
+DATA(lv_day) = SWITCH string( lv_wd WHEN 1 THEN `Lunes`
+                                    WHEN 2 THEN `Martes`
+                                    ELSE THROW zcx_invalid( ) ).
+</pre>
+    <h3>CORRESPONDING</h3>
+<pre class="abap">
+ls_out = CORRESPONDING #( ls_in ).
+ls_out = CORRESPONDING #( BASE ( ls_out ) ls_in ).   " conserva
+ls_out = CORRESPONDING #( ls_in MAPPING customer = kunnr
+                                EXCEPT  ernam ).
+lt_out = CORRESPONDING #( lt_in DISCARDING DUPLICATES ).
+</pre>
+    <h3>LET: variables auxiliares</h3>
+<pre class="abap">
+DATA(lv_full) = VALUE string( LET f = ls-first l = ls-last
+                              IN |{ l }, { f }| ).
+</pre>
+  </div>
+  <footer><span>Abel González Guerra · Desarrollador SAP ABAP</span><span>github.com/abelg02</span></footer>
+</section>
+
+<!-- ============================== PÁGINA 2 ============================== -->
+<section class="page">
+  <header>
+    <div><h1>Tablas internas y cadenas</h1><div class="sub">Tipos de tabla · expresiones · FOR, REDUCE, FILTER, GROUP BY · string templates</div></div>
+    <div class="pg">2 / 4</div>
+  </header>
+  <div class="cols">
+    <h2>Tipos de tabla</h2>
+    <table>
+      <tr><th>Tipo</th><th>Acceso por clave</th><th>Cuándo</th></tr>
+      <tr><td><code>STANDARD</code></td><td>Lineal (O(n))</td><td>Recorrer, añadir, pocas búsquedas</td></tr>
+      <tr><td><code>SORTED</code></td><td>Binario (O(log n))</td><td>Búsquedas y LOOP WHERE por la clave</td></tr>
+      <tr><td><code>HASHED</code></td><td>Constante (O(1))</td><td>Búsquedas por clave única completa</td></tr>
+    </table>
+<pre class="abap">
+TYPES tt_mat TYPE SORTED TABLE OF ty_mat
+  WITH UNIQUE KEY matnr
+  WITH NON-UNIQUE SORTED KEY by_type COMPONENTS mtart.
+
+LOOP AT lt_mat INTO DATA(ls) USING KEY by_type
+     WHERE mtart = 'FERT'.
+</pre>
+
+    <h2>Leer y comprobar</h2>
+<pre class="abap">
+" Excepción CX_SY_ITAB_LINE_NOT_FOUND si no existe:
+ls = lt[ matnr = lv ].
+" Valor inicial si no existe:
+ls = VALUE #( lt[ matnr = lv ] OPTIONAL ).
+ls = VALUE #( lt[ matnr = lv ] DEFAULT ls_def ).
+lv = lt[ 1 ]-matnr.                " por índice
+lv = lt[ KEY by_type mtart = 'FERT' ]-matnr.
+IF line_exists( lt[ matnr = lv ] ).
+DATA(lv_idx) = line_index( lt[ matnr = lv ] ).
+</pre>
+
+    <h2>FOR: construir una tabla desde otra</h2>
+<pre class="abap">
+DATA(lt_ids) = VALUE tt_ids( FOR ls IN lt_orders
+                             WHERE ( status = 'O' )
+                             ( ls-order_id ) ).
+
+DATA(lt_out) = VALUE tt_out(
+  FOR ls IN lt_in INDEX INTO i
+  ( pos = i  name = to_upper( ls-name ) ) ).
+
+" Anidado: posiciones de todas las cabeceras
+DATA(lt_flat) = VALUE tt_flat(
+  FOR h IN lt_head
+  FOR p IN h-items
+  ( vbeln = h-vbeln posnr = p-posnr ) ).
+</pre>
+
+    <h2>REDUCE: acumular</h2>
+<pre class="abap">
+DATA(lv_sum) = REDUCE netwr( INIT s = CONV netwr( 0 )
+                             FOR ls IN lt_pos
+                             NEXT s = s + ls-netwr ).
+
+DATA(lv_csv) = REDUCE string(
+  INIT t = ``
+  FOR ls IN lt_mat
+  NEXT t = |{ t }{ ls-matnr };| ).
+</pre>
+
+    <h2>FILTER</h2>
+<pre class="abap">
+" Requiere clave SORTED o HASHED sobre los campos del WHERE
+DATA(lt_fert) = FILTER #( lt_mat USING KEY by_type
+                          WHERE mtart = CONV #( 'FERT' ) ).
+" Con tabla de filtro
+DATA(lt_sel)  = FILTER #( lt_mat IN lt_keys
+                          WHERE matnr = matnr ).
+DATA(lt_rest) = FILTER #( lt_mat EXCEPT IN lt_keys
+                          WHERE matnr = matnr ).
+</pre>
+
+    <h2>Agrupar</h2>
+<pre class="abap">
+LOOP AT lt_pos INTO DATA(ls_pos)
+     GROUP BY ( vbeln = ls_pos-vbeln  n = GROUP SIZE )
+     ASCENDING INTO DATA(ls_grp).
+  DATA(lv_tot) = REDUCE netwr( INIT s = CONV netwr( 0 )
+                               FOR m IN GROUP ls_grp
+                               NEXT s = s + m-netwr ).
+ENDLOOP.
+</pre>
+
+    <h2>Operaciones habituales</h2>
+<pre class="abap">
+SORT lt BY matnr werks DESCENDING.
+" Tras SORT por los mismos campos:
+DELETE ADJACENT DUPLICATES FROM lt COMPARING matnr.
+DELETE lt WHERE status = 'X'.
+INSERT LINES OF lt_new INTO TABLE lt.
+APPEND INITIAL LINE TO lt ASSIGNING FIELD-SYMBOL(<ls_new>).
+MODIFY lt FROM ls TRANSPORTING status WHERE vbeln = lv.
+</pre>
+
+    <h2>String templates y funciones</h2>
+<pre class="abap">
+|Pedido { lv_ebeln ALPHA = OUT }|
+|{ lv_date DATE = USER } { lv_time TIME = USER }|
+|{ lv_amount NUMBER = USER DECIMALS = 2 }|
+|{ lv_text WIDTH = 10 ALIGN = RIGHT PAD = '0' }|
+|{ lv_ts TIMESTAMP = ISO }|
+|Línea 1\nLínea 2\tcon tabulador|
+</pre>
+    <table>
+      <tr><td><code>condense( val = s )</code></td><td>Quita espacios sobrantes</td></tr>
+      <tr><td><code>to_upper( s )</code> / <code>to_lower( )</code></td><td>Mayúsculas / minúsculas</td></tr>
+      <tr><td><code>substring( val = s off = 2 len = 3 )</code></td><td>Subcadena</td></tr>
+      <tr><td><code>replace( val = s sub = `a` with = `b` occ = 0 )</code></td><td>Reemplazar todas</td></tr>
+      <tr><td><code>find( val = s sub = `x` )</code></td><td>Posición (-1 si no)</td></tr>
+      <tr><td><code>matches( val = s pcre = `^\d+$` )</code></td><td>Expresión regular</td></tr>
+      <tr><td><code>segment( val = s index = 2 sep = `;` )</code></td><td>Trozo n de un CSV</td></tr>
+      <tr><td><code>strlen( s )</code>, <code>numofchar( s )</code></td><td>Longitud</td></tr>
+      <tr><td><code>concat_lines_of( table = lt sep = `, ` )</code></td><td>Unir líneas</td></tr>
+      <tr><td><code>shift_left( val = s sub = `0` )</code></td><td>Quitar ceros a la izquierda</td></tr>
+    </table>
+  </div>
+  <footer><span>Abel González Guerra · Desarrollador SAP ABAP</span><span>github.com/abelg02</span></footer>
+</section>
+
+<!-- ============================== PÁGINA 3 ============================== -->
+<section class="page">
+  <header>
+    <div><h1>ABAP SQL y CDS</h1><div class="sub">Sintaxis estricta · joins · expresiones · CTE · vistas CDS</div></div>
+    <div class="pg">3 / 4</div>
+  </header>
+  <div class="cols">
+    <h2>SELECT con sintaxis estricta</h2>
+<pre class="abap">
+SELECT FROM ekko AS h
+  INNER JOIN ekpo AS p ON p~ebeln = h~ebeln
+  FIELDS h~ebeln, h~lifnr, p~ebelp, p~matnr, p~netwr
+  WHERE h~bukrs IN @s_bukrs
+    AND p~loekz = @abap_false
+  ORDER BY h~ebeln, p~ebelp
+  INTO TABLE @DATA(lt_po)
+  UP TO 500 ROWS.
+</pre>
+    <div class="note">Comas entre campos + <code>@</code> en variables ABAP = sintaxis estricta. Necesaria para expresiones, declaración en línea y ABAP Cloud.</div>
+
+    <h3>Una fila, existencia y recuento</h3>
+<pre class="abap">
+SELECT SINGLE FROM t001 FIELDS butxt
+  WHERE bukrs = @lv_bukrs INTO @DATA(lv_name).
+
+SELECT SINGLE @abap_true FROM mara
+  WHERE matnr = @lv_matnr INTO @DATA(lv_exists).
+
+SELECT COUNT(*) FROM vbak WHERE kunnr = @lv_kunnr
+  INTO @DATA(lv_count).
+</pre>
+
+    <h3>Expresiones en el SELECT</h3>
+<pre class="abap">
+SELECT FROM vbak
+  FIELDS vbeln,
+         CASE WHEN netwr > 10000 THEN 'A' ELSE 'B' END AS clase,
+         CAST( netwr AS DEC( 15, 2 ) ) AS importe,
+         concat_with_space( vbeln, kunnr, 1 ) AS clave,
+         coalesce( vkorg, '0000' ) AS org,
+         dats_days_between( erdat, @lv_hoy ) AS antiguedad
+  INTO TABLE @DATA(lt).
+</pre>
+
+    <h3>Agregados</h3>
+<pre class="abap">
+SELECT FROM vbap
+  FIELDS matnr, SUM( kwmeng ) AS cantidad, COUNT(*) AS lineas
+  WHERE erdat >= @lv_desde
+  GROUP BY matnr
+  HAVING SUM( kwmeng ) > 100
+  INTO TABLE @DATA(lt_tot).
+</pre>
+
+    <h3>FOR ALL ENTRIES</h3>
+<pre class="abap">
+IF lt_head IS NOT INITIAL.          " si está vacía, lee TODO
+  SELECT FROM ekpo FIELDS ebeln, ebelp, matnr
+    FOR ALL ENTRIES IN @lt_head
+    WHERE ebeln = @lt_head-ebeln
+    INTO TABLE @DATA(lt_items).
+ENDIF.
+</pre>
+
+    <h3>Subconsulta y tabla interna como fuente</h3>
+<pre class="abap">
+SELECT FROM kna1 FIELDS kunnr, name1
+  WHERE kunnr IN ( SELECT kunnr FROM vbak WHERE erdat >= @lv_desde )
+  INTO TABLE @DATA(lt_cli).
+
+SELECT FROM @lt_mat AS m FIELDS matnr   " 7.52+
+  WHERE mtart = 'FERT' INTO TABLE @DATA(lt_fert).
+</pre>
+
+    <h3>CTE (WITH)</h3>
+<pre class="abap">
+WITH +ventas AS ( SELECT FROM vbak FIELDS kunnr, SUM( netwr ) AS total
+                    GROUP BY kunnr )
+SELECT FROM +ventas FIELDS kunnr, total
+  WHERE total > 50000
+  INTO TABLE @DATA(lt_top).
+</pre>
+
+    <h3>Escritura</h3>
+<pre class="abap">
+INSERT ztable FROM @ls_row.
+INSERT ztable FROM TABLE @lt_rows ACCEPTING DUPLICATE KEYS.
+UPDATE ztable SET status = 'C' WHERE id = @lv_id.
+MODIFY ztable FROM TABLE @lt_rows.
+DELETE FROM ztable WHERE created_at < @lv_limite.
+</pre>
+
+    <h2>CDS: vista de interfaz</h2>
+<pre class="abap">
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Pedido de venta'
+define view entity ZI_SalesOrder
+  as select from vbak
+  association [0..*] to ZI_SalesOrderItem as _Item
+    on $projection.SalesOrder = _Item.SalesOrder
+  association [1..1] to I_Customer as _Customer
+    on $projection.Customer = _Customer.Customer
+{
+  key vbeln as SalesOrder,
+      kunnr as Customer,
+      @Semantics.amount.currencyCode: 'Currency'
+      netwr as NetAmount,
+      waerk as Currency,
+      erdat as CreatedOn,
+      _Item,
+      _Customer
+}
+</pre>
+    <h3>Parámetros, sesión y control de acceso</h3>
+<pre class="abap">
+define view entity ZI_OrdersFrom
+  with parameters p_from : abap.dats
+  as select from vbak
+{ key vbeln, erdat }
+where erdat >= $parameters.p_from
+  and ernam = $session.user
+
+@MappingRole: true
+define role ZI_SalesOrder_DCL {
+  grant select on ZI_SalesOrder
+    where ( SalesOrganization ) = aspect pfcg_auth( V_VBAK_VKO, VKORG, ACTVT = '03' );
+}
+</pre>
+  </div>
+  <footer><span>Abel González Guerra · Desarrollador SAP ABAP</span><span>github.com/abelg02</span></footer>
+</section>
+
+<!-- ============================== PÁGINA 4 ============================== -->
+<section class="page">
+  <header>
+    <div><h1>RAP, EML y ABAP Cloud</h1><div class="sub">Behavior definition · EML · mensajes · APIs liberadas</div></div>
+    <div class="pg">4 / 4</div>
+  </header>
+  <div class="cols">
+    <h2>Behavior definition (gestionado con draft)</h2>
+<pre class="abap">
+managed implementation in class zbp_r_order unique;
+strict ( 2 );
+with draft;
+define behavior for ZR_Order alias Order
+persistent table zorder
+draft table zorder_d
+lock master total etag LastChangedAt
+authorization master ( instance )
+etag master LocalLastChangedAt
+{
+  create; update; delete;
+  field ( readonly, numbering : managed ) OrderUUID;
+  field ( mandatory ) Customer;
+  action ( features : instance ) approve result [1] $self;
+  determination setStatus on modify { create; }
+  validation checkCustomer on save
+    { create; field Customer; }
+  draft action Edit; draft action Activate optimized;
+  draft action Discard; draft action Resume;
+  draft determine action Prepare
+    { validation checkCustomer; }
+}
+</pre>
+
+    <h2>EML: leer</h2>
+<pre class="abap">
+READ ENTITIES OF zr_order IN LOCAL MODE
+  ENTITY Order
+    FIELDS ( Status Customer ) WITH CORRESPONDING #( keys )
+  RESULT DATA(lt_orders)
+  FAILED DATA(ls_failed).
+
+READ ENTITIES OF zr_order
+  ENTITY Order BY \_Item ALL FIELDS
+  WITH VALUE #( ( %tky = ls_order-%tky ) )
+  RESULT DATA(lt_items).
+</pre>
+
+    <h2>EML: crear, modificar, borrar, ejecutar</h2>
+<pre class="abap">
+MODIFY ENTITIES OF zr_order
+  ENTITY Order
+    CREATE FIELDS ( Customer Description )
+    WITH VALUE #( ( %cid        = 'O1'
+                    Customer    = '1000'
+                    Description = `Nuevo` ) )
+    CREATE BY \_Item FIELDS ( Material Quantity )
+    WITH VALUE #( ( %cid_ref = 'O1'
+                    %target  = VALUE #( ( %cid     = 'I1'
+                                          Material = 'M-01'
+                                          Quantity = 5 ) ) ) )
+  MAPPED DATA(ls_mapped)
+  FAILED DATA(ls_failed)
+  REPORTED DATA(ls_reported).
+
+MODIFY ENTITIES OF zr_order ENTITY Order
+  UPDATE FIELDS ( Status )
+  WITH VALUE #( ( %tky = ls-%tky Status = 'A' ) ).
+
+MODIFY ENTITIES OF zr_order ENTITY Order
+  DELETE FROM VALUE #( ( %tky = ls-%tky ) ).
+
+MODIFY ENTITIES OF zr_order ENTITY Order
+  EXECUTE approve FROM VALUE #( ( %tky = ls-%tky ) ).
+
+" Fuera del behavior pool:
+COMMIT ENTITIES RESPONSE OF zr_order
+  FAILED DATA(ls_cf) REPORTED DATA(ls_cr).
+</pre>
+
+    <h2>Componentes %</h2>
+    <table>
+      <tr><td><code>%tky</code></td><td>Clave de transacción (clave + %is_draft)</td></tr>
+      <tr><td><code>%cid</code> / <code>%cid_ref</code></td><td>Id temporal en creación / referencia a él</td></tr>
+      <tr><td><code>%param</code></td><td>Parámetros de acción o su resultado</td></tr>
+      <tr><td><code>%control</code></td><td>Qué campos se informan en un UPDATE</td></tr>
+      <tr><td><code>%msg</code>, <code>%element</code></td><td>Mensaje y campo erróneo en REPORTED</td></tr>
+      <tr><td><code>%state_area</code></td><td>Grupo de mensajes que se limpian juntos</td></tr>
+      <tr><td><code>%is_draft</code></td><td>Instancia borrador (mk-on) o activa</td></tr>
+    </table>
+
+    <h2>Mensajes en validaciones</h2>
+<pre class="abap">
+APPEND VALUE #( %tky = ls-%tky ) TO failed-order.
+APPEND VALUE #(
+  %tky              = ls-%tky
+  %state_area       = 'CHECK_CUSTOMER'
+  %element-Customer = if_abap_behv=>mk-on
+  %msg = new_message(
+           id       = 'ZORDER'
+           number   = '001'
+           v1       = ls-Customer
+           severity = if_abap_behv_message=>severity-error ) )
+  TO reported-order.
+</pre>
+
+    <h2>ABAP Cloud: qué usar en su lugar</h2>
+    <table>
+      <tr><th>Clásico</th><th>ABAP Cloud</th></tr>
+      <tr><td class="old"><code>sy-datum</code> / <code>sy-uzeit</code></td><td class="new"><code>cl_abap_context_info=><br>get_system_date( ) / _time( )</code></td></tr>
+      <tr><td class="old"><code>sy-uname</code></td><td class="new"><code>cl_abap_context_info=><br>get_user_technical_name( )</code></td></tr>
+      <tr><td class="old"><code>MARA</code>, <code>VBAK</code>, <code>EKKO</code></td><td class="new"><code>I_Product</code>, <code>I_SalesDocument</code>, <code>I_PurchaseOrderAPI01</code></td></tr>
+      <tr><td class="old"><code>BAL_LOG_CREATE</code></td><td class="new"><code>cl_bali_log</code></td></tr>
+      <tr><td class="old"><code>SO_NEW_DOCUMENT_ATT_SEND_API1</code></td><td class="new"><code>cl_bcs_mail_message</code></td></tr>
+      <tr><td class="old"><code>NUMBER_GET_NEXT</code></td><td class="new"><code>cl_numberrange_runtime</code></td></tr>
+      <tr><td class="old"><code>JOB_OPEN</code> / <code>SUBMIT</code></td><td class="new">Application Jobs (<code>cl_apj_rt_api</code>)</td></tr>
+      <tr><td class="old"><code>cl_http_client</code></td><td class="new"><code>cl_web_http_client_manager</code></td></tr>
+      <tr><td class="old">ALV, <code>WRITE</code></td><td class="new">Fiori Elements, <code>if_oo_adt_classrun</code></td></tr>
+      <tr><td class="old"><code>GUI_UPLOAD</code>, <code>OPEN DATASET</code></td><td class="new">RAP large objects, <code>xco_cp_xlsx</code></td></tr>
+      <tr><td class="old">BAPI de creación</td><td class="new">EML sobre BO liberado (<code>I_*TP</code>)</td></tr>
+    </table>
+    <div class="note">Estado de liberación de un objeto: ADT, pestaña Properties > API State, o el Cloudification Repository (github.com/SAP/abap-atc-cr-cv-s4hc). Variante de ATC: <code>ABAP_CLOUD_READINESS</code>.</div>
+  </div>
+  <footer><span>Abel González Guerra · Desarrollador SAP ABAP</span><span>Más herramientas y artículos: github.com/abelg02</span></footer>
+</section>
+
+</body>
+</html>

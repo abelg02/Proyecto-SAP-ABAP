@@ -1,0 +1,43 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: { typeName: 'Solicitud',
+                typeNamePlural: 'Solicitudes',
+                title: { type: #STANDARD, value: 'Title' },
+                description: { value: 'RequestId' } },
+  presentationVariant: [{ sortOrder: [{ by: 'RequestId', direction: #DESC }], visualizations: [{ type: #AS_LINEITEM }] }]
+}
+annotate entity ZC_REQUEST_ABK with
+{
+  @UI.facet: [ { id: 'General', purpose: #STANDARD, type: #IDENTIFICATION_REFERENCE, label: 'Datos generales', position: 10 } ]
+
+  @UI.hidden: true
+  RequestUUID;
+
+  @UI: { lineItem: [{ position: 10 }], identification: [{ position: 10 }], selectionField: [{ position: 10 }] }
+  RequestId;
+
+  @UI: { lineItem: [{ position: 20 }], identification: [{ position: 20 }] }
+  Title;
+
+  @UI: { identification: [{ position: 30 }], multiLineText: true }
+  Description;
+
+  @UI: { lineItem: [{ position: 40, criticality: 'StatusCriticality' },
+                    { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Cambiar estado' }],
+         identification: [{ position: 40, criticality: 'StatusCriticality' },
+                          { type: #FOR_ACTION, dataAction: 'changeStatus', label: 'Cambiar estado' }],
+         selectionField: [{ position: 20 }] }
+  Status;
+
+  @UI: { lineItem: [{ position: 50 }], identification: [{ position: 50 }], selectionField: [{ position: 30 }] }
+  Priority;
+
+  @UI: { lineItem: [{ position: 60 }], identification: [{ position: 60 }] }
+  Amount;
+
+  @UI: { lineItem: [{ position: 70 }], identification: [{ position: 70 }] }
+  DueDate;
+
+  @UI.hidden: true
+  StatusCriticality;
+}

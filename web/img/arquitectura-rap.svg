@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 520" font-family="Public Sans, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#8a96a3"/>
+    </marker>
+    <style>
+      .box{fill:#fff;stroke:#c9d1da;stroke-width:1.2}
+      .boxa{fill:#e8f1fb;stroke:#0a5cad;stroke-width:1.2}
+      .boxd{fill:#15202b;stroke:#15202b}
+      .t{font-size:13px;font-weight:600;fill:#1c2530}
+      .s{font-size:11.5px;fill:#5b6675}
+      .m{font-size:11px;fill:#0a5cad;font-family:JetBrains Mono,Consolas,monospace}
+      .w{font-size:13px;font-weight:600;fill:#fff}
+      .ws{font-size:11.5px;fill:#b9c4cf}
+      .lbl{font-size:10.5px;fill:#8a96a3;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+      .ln{stroke:#8a96a3;stroke-width:1.2;fill:none}
+    </style>
+  </defs>
+
+  <text x="20" y="24" class="lbl">Interfaz</text>
+  <rect x="20" y="34" width="440" height="58" rx="6" class="boxd"/>
+  <text x="38" y="58" class="w">Fiori Elements · List Report + Object Page</text>
+  <text x="38" y="78" class="ws">Generada desde anotaciones UI; sin código JavaScript propio</text>
+
+  <text x="20" y="122" class="lbl">Servicio</text>
+  <rect x="20" y="132" width="210" height="58" rx="6" class="box"/>
+  <text x="36" y="156" class="t">Service Binding</text>
+  <text x="36" y="176" class="m">OData V4 - UI</text>
+  <rect x="250" y="132" width="210" height="58" rx="6" class="box"/>
+  <text x="266" y="156" class="t">Service Definition</text>
+  <text x="266" y="176" class="m">ZUI_DT_INCT_AGG_O4</text>
+
+  <text x="20" y="220" class="lbl">Proyección (consumo)</text>
+  <rect x="20" y="230" width="210" height="72" rx="6" class="boxa"/>
+  <text x="36" y="254" class="t">Vistas de proyección</text>
+  <text x="36" y="274" class="m">ZC_DT_INCT_AGG</text>
+  <text x="36" y="291" class="m">ZC_DT_INCT_H_AGG</text>
+  <rect x="250" y="230" width="210" height="72" rx="6" class="box"/>
+  <text x="266" y="254" class="t">Metadata extensions</text>
+  <text x="266" y="274" class="s">Columnas, facetas, filtros</text>
+  <text x="266" y="291" class="s">y botones de acción</text>
+
+  <text x="20" y="332" class="lbl">Modelo de negocio</text>
+  <rect x="20" y="342" width="210" height="72" rx="6" class="boxa"/>
+  <text x="36" y="366" class="t">Entidad raíz</text>
+  <text x="36" y="386" class="m">ZR_DT_INCT_AGG</text>
+  <text x="36" y="403" class="s">composición → historial</text>
+  <rect x="250" y="342" width="210" height="72" rx="6" class="box"/>
+  <text x="266" y="366" class="t">Value helps</text>
+  <text x="266" y="386" class="m">ZDD_STATUS_VH_AGG</text>
+  <text x="266" y="403" class="m">ZDD_PRIORITY_VH_AGG</text>
+
+  <text x="20" y="444" class="lbl">Persistencia</text>
+  <rect x="20" y="454" width="440" height="52" rx="6" class="box"/>
+  <text x="36" y="477" class="m">ZDT_INCT_AGG · ZDT_INCT_H_AGG · ZDT_STATUS_AGG · ZDT_PRIORITY_AGG</text>
+  <text x="36" y="495" class="s">Tablas activas y tablas draft</text>
+
+  <!-- Comportamiento -->
+  <text x="510" y="220" class="lbl">Comportamiento</text>
+  <rect x="510" y="230" width="230" height="184" rx="6" class="box"/>
+  <text x="526" y="254" class="t">Behavior Definition</text>
+  <text x="526" y="273" class="s">managed · strict(2) · with draft</text>
+  <line x1="526" y1="286" x2="724" y2="286" stroke="#eceff3"/>
+  <text x="526" y="306" class="t">Behavior pool (EML)</text>
+  <text x="526" y="326" class="s">Determinaciones: id, estado inicial,</text>
+  <text x="526" y="342" class="s">historial</text>
+  <text x="526" y="362" class="s">Validaciones: obligatorios, fechas,</text>
+  <text x="526" y="378" class="s">borrado solo en Abierta</text>
+  <text x="526" y="398" class="s">Acción changeStatus + autorización</text>
+
+  <text x="510" y="122" class="lbl">Herramientas</text>
+  <rect x="510" y="132" width="230" height="58" rx="6" class="box"/>
+  <text x="526" y="156" class="t">ADT (Eclipse) · abapGit</text>
+  <text x="526" y="176" class="s">Código versionado en GitHub</text>
+
+  <path d="M240 132 L240 92" class="ln" marker-end="url(#a)"/>
+  <path d="M125 230 L125 190" class="ln" marker-end="url(#a)"/>
+  <path d="M355 230 L355 190" class="ln" marker-end="url(#a)"/>
+  <path d="M125 342 L125 302" class="ln" marker-end="url(#a)"/>
+  <path d="M125 454 L125 414" class="ln" marker-end="url(#a)"/>
+  <path d="M230 266 L250 266" class="ln" marker-end="url(#a)"/>
+  <path d="M510 378 L460 378" class="ln" marker-end="url(#a)"/>
+  <path d="M510 378 L470 378 L470 300 L460 300" class="ln" stroke-dasharray="3 3"/>
+</svg>

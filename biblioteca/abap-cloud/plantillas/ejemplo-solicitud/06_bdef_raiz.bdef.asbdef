@@ -1,0 +1,58 @@
+managed implementation in class ZBP_R_REQUEST_ABK unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_REQUEST_ABK alias Request
+persistent table ZDT_REQUEST_AB
+draft table ZDT_REQUEST_AB_D
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( instance )
+{
+  field ( readonly, numbering : managed ) RequestUUID;
+  field ( readonly ) RequestId, Status, StatusCriticality,
+                     LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
+  field ( mandatory ) Title, Priority;
+
+  create;
+  update ( features : instance );
+  delete ( features : instance );
+
+  action ( features : instance ) changeStatus parameter ZDD_REQUEST_STAT_PRM result [1] $self;
+
+  determination setDefaults on modify { create; }
+
+  validation validateMandatory on save { create; field Title, Priority; }
+  validation validateDueDate   on save { create; field DueDate; }
+
+  side effects { action changeStatus affects $self; }
+
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+
+  draft determine action Prepare
+  {
+    validation validateMandatory;
+    validation validateDueDate;
+  }
+
+  mapping for ZDT_REQUEST_AB
+  {
+    RequestUUID          = request_uuid;
+    RequestId             = request_id;
+    Title              = title;
+    Description        = description;
+    Status             = status;
+    Priority           = priority;
+    Amount             = amount;
+    Currency           = currency;
+    DueDate            = due_date;
+    LocalCreatedBy     = local_created_by;
+    LocalCreatedAt     = local_created_at;
+    LocalLastChangedBy = local_last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+    LastChangedAt      = last_changed_at;
+  }
+}

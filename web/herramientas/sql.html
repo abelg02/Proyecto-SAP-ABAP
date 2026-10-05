@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversor de Open SQL a sintaxis estricta · Abel González Guerra</title>
+<meta name="description" content="Convierte sentencias SELECT de Open SQL antiguo a la sintaxis estricta de ABAP 7.40+ (variables con @, campos con comas, FIELDS) y avisa de SELECT *, FOR ALL ENTRIES sin comprobar y falta de ORDER BY en HANA.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Conversor de Open SQL a sintaxis estricta · Abel González Guerra">
+<meta property="og:description" content="Convierte sentencias SELECT de Open SQL antiguo a la sintaxis estricta de ABAP 7.40+ (variables con @, campos con comas, FIELDS) y avisa de SELECT *, FOR ALL ENTRIES sin comprobar y falta de ORDER BY en HANA.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/tool.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html" class="active" aria-current="page">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / Conversor de Open SQL</div>
+    <h1>Conversor de Open SQL a sintaxis estricta</h1>
+    <p>Pega tus SELECT antiguos y obtén la versión con sintaxis estricta: variables con <code>@</code>, campos separados por comas, <code>FIELDS</code> y el <code>INTO</code> al final. Es la sintaxis que exige ABAP Cloud y la que permite usar expresiones SQL. De paso, te avisa de lo que conviene revisar.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:28px">
+  <div class="wrap grid grid-2" style="align-items:start">
+    <div class="card form" style="min-width:0">
+      <div style="display:flex;justify-content:space-between;align-items:end;gap:10px">
+        <label for="sql-in" style="margin:0">SQL antiguo</label>
+        <button class="btn btn-secondary btn-small" id="sql-example" type="button">Ejemplo</button>
+      </div>
+      <textarea id="sql-in" spellcheck="false" style="min-height:420px;font-family:var(--mono);font-size:12.5px"></textarea>
+      <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" id="sql-inline" style="width:auto"> Usar declaración en línea en el destino (<code>@DATA(lt_...)</code>)</label>
+    </div>
+    <div style="min-width:0">
+      <div class="code-window">
+        <div class="bar"><span>Sintaxis estricta (7.40 SP05+)</span><button class="btn btn-secondary btn-small" id="sql-copy" type="button">Copiar todo</button></div>
+        <div id="sql-out" class="sql-out"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap narrow">
+    <h2>Cómo decide qué es una variable</h2>
+    <p>En la sintaxis antigua, <code>WHERE matnr = lv_matnr</code> no indica si <code>lv_matnr</code> es una columna o una variable ABAP. El conversor añade <code>@</code> cuando:</p>
+    <ul>
+      <li>El nombre sigue las convenciones habituales: <code>lv_</code>, <code>ls_</code>, <code>lt_</code>, <code>gv_</code>, <code>p_</code>, <code>s_</code>, <code>iv_</code>, <code>is_</code>, <code>wa_</code>, <code>it_</code>, field-symbols y <code>sy-</code>.</li>
+      <li>Es un componente de estructura (<code>ls_item-matnr</code>) a la derecha de una comparación.</li>
+      <li>Es <code>space</code>, <code>abap_true</code> o <code>abap_false</code>.</li>
+    </ul>
+    <p>Si encuentra un nombre que no sabe clasificar, lo deja como está y te avisa para que lo revises. Es preferible a equivocarse en silencio.</p>
+    <div class="callout">Para revisar el programa completo (no solo el SQL), pégalo en <a href="cleancore-check.html">CleanCore Check</a>.</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/abap-highlight.js"></script>
+<script src="../js/sql-convert.js"></script>
+<script src="../js/sql-ui.js"></script>
+<script src="../js/site.js"></script>
+</body>
+</html>

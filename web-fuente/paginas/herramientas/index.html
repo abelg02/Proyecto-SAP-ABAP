@@ -1,0 +1,88 @@
+<!-- {"title": "Herramientas gratuitas para SAP ABAP", "description": "Herramientas gratuitas para desarrolladores SAP ABAP que funcionan en el navegador: análisis de código para ABAP Cloud y S/4HANA, explicador de dumps ST22, conversor de Open SQL, formateador, generadores y referencia.", "out": "herramientas/index.html", "nav": "herramientas"} -->
+
+<section class="page-head">
+  <div class="wrap">
+    <h1>Herramientas para desarrolladores SAP ABAP</h1>
+    <p class="lead">Gratis, sin registro y sin instalar nada. Todas funcionan en tu navegador: el código que pegas no se envía a ningún servidor, así que puedes usarlas con código de tu empresa.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2 style="margin-bottom:20px">Revisar y entender código</h2>
+    <div class="grid grid-3">
+      <a class="card card-link" href="cleancore-check.html">
+        <div class="meta">Análisis de código</div>
+        <h3>CleanCore Check</h3>
+        <p class="muted">{{rules_count}} reglas para ECC, S/4HANA on-premise, Private Edition, Public Edition y BTP: lo que no compila en tu versión, lo que se rompe al migrar, rendimiento y seguridad. Nota de 0 a 100, corrección de cada hallazgo y modernización automática.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="dumps.html">
+        <div class="meta">Errores de ejecución</div>
+        <h3>Explicador de dumps ST22</h3>
+        <p class="muted">Pega el dump y entiende qué ha pasado: significado del error, causas habituales, cómo analizarlo y la corrección típica en código. Más de 40 errores frecuentes.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="referencia.html">
+        <div class="meta">Consulta</div>
+        <h3>Referencia ABAP</h3>
+        <p class="muted">Transacciones para desarrolladores, funciones y BAPIs con su sustituto en ABAP Cloud, y tablas estándar con su vista CDS liberada y sus cambios en S/4HANA.</p>
+        <span class="more">Abrir →</span>
+      </a>
+    </div>
+
+    <h2 style="margin:48px 0 20px">Transformar código</h2>
+    <div class="grid grid-3">
+      <a class="card card-link" href="sql.html">
+        <div class="meta">Open SQL</div>
+        <h3>Conversor a sintaxis estricta</h3>
+        <p class="muted">Pasa tus SELECT antiguos a la sintaxis con @, comas y FIELDS que exige ABAP Cloud, y avisa de SELECT *, FOR ALL ENTRIES sin comprobar y falta de ORDER BY.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="formateador.html">
+        <div class="meta">Estilo</div>
+        <h3>Formateador ABAP</h3>
+        <p class="muted">El Pretty Printer en el navegador: sangría por bloques y palabras clave en mayúsculas o minúsculas, sin tocar literales ni comentarios.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="fechas.html">
+        <div class="meta">Utilidad</div>
+        <h3>Timestamps y fechas</h3>
+        <p class="muted">TIMESTAMP, TIMESTAMPL, DATS, TIMS, Unix e ISO entre zonas horarias, con el código ABAP equivalente. Calculadora de días naturales y laborables.</p>
+        <span class="more">Abrir →</span>
+      </a>
+    </div>
+
+    <h2 style="margin:48px 0 20px">Generar código</h2>
+    <div class="grid grid-3">
+      <a class="card card-link" href="generadores.html#rap">
+        <div class="meta">RAP</div>
+        <h3>Business Object RAP con draft</h3>
+        <p class="muted">Los 9 objetos de un BO gestionado: tabla, vistas, metadata extension, BDEF, behavior pool y servicio, con nombres ajustados a las longitudes de SAP.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="generadores.html#alv">
+        <div class="meta">ABAP clásico</div>
+        <h3>Report ALV completo</h3>
+        <p class="muted">A partir de una tabla y sus campos: pantalla de selección, clase local, SELECT moderna y ALV con funciones y variantes.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="generadores.html#tests">
+        <div class="meta">Calidad</div>
+        <h3>Tests ABAP Unit, excepciones y JSON</h3>
+        <p class="muted">Esqueleto de tests a partir de una clase, clase de excepción con mensajes T100 y tipos ABAP a partir de una respuesta JSON.</p>
+        <span class="more">Abrir →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap narrow">
+    <h2>¿Para qué sirven en un proyecto real?</h2>
+    <p><strong>Antes de una migración a S/4HANA.</strong> Pasar los programas Z más usados por CleanCore Check, con el destino "S/4HANA on-premise", da una primera foto del trabajo que hay, antes incluso de tener el sistema nuevo.</p>
+    <p><strong>Cuando algo falla en productivo.</strong> El explicador de dumps te orienta en minutos y la referencia te da la transacción o la función que necesitas.</p>
+    <p><strong>En una revisión de código.</strong> El informe de CleanCore Check (Markdown, CSV o PDF) se adjunta al ticket o a la pull request de abapGit con la línea, la regla y la corrección.</p>
+    <p><strong>Al empezar un desarrollo.</strong> Los generadores dejan el esqueleto listo y el tiempo se va a la lógica de negocio.</p>
+  </div>
+</section>

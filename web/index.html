@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abel González Guerra</title>
+<meta name="description" content="Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: análisis de código para ABAP Cloud y S/4HANA, explicador de dumps ST22, conversor de Open SQL, generadores RAP y ALV, y biblioteca de clases ABAP.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Abel González Guerra">
+<meta property="og:description" content="Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: análisis de código para ABAP Cloud y S/4HANA, explicador de dumps ST22, conversor de Open SQL, generadores RAP y ALV, y biblioteca de clases ABAP.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="herramientas/index.html">Herramientas</a>
+        <a href="biblioteca.html">Biblioteca</a>
+        <a href="proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="blog/index.html">Blog</a>
+        <a href="recursos.html">Recursos</a>
+        <a href="sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">SAP ABAP · ABAP Cloud · RAP · S/4HANA</p>
+      <h1>Herramientas gratuitas para el día a día de un desarrollador ABAP.</h1>
+      <p class="lead">Analiza tu código para ECC, S/4HANA o ABAP Cloud, entiende un dump de la ST22, convierte Open SQL antiguo, genera un BO RAP o un report ALV y descarga una biblioteca de clases ABAP. Todo funciona en tu navegador y el código no sale de tu ordenador.</p>
+      <div class="hero-actions">
+        <a class="btn" href="herramientas/cleancore-check.html">Analizar código ABAP</a>
+        <a class="btn btn-secondary" href="herramientas/index.html">Ver todas las herramientas</a>
+      </div>
+      <div class="hero-facts">
+        <div><strong>72</strong>reglas de análisis de código</div>
+        <div><strong>6</strong>sistemas SAP: de ECC 7.0x a BTP</div>
+        <div><strong>11</strong>herramientas, sin registro</div>
+      </div>
+    </div>
+
+    <aside class="profile-card" aria-label="Sobre el autor">
+      <div class="head">Hecho por un desarrollador ABAP</div>
+      <div class="row"><span>Autor</span><span>Abel González Guerra</span></div>
+      <div class="row"><span>Especialidad</span><span>ABAP Cloud, RAP, CDS</span></div>
+      <div class="row"><span>También</span><span>ABAP clásico 7.4+, ALV, BAPIs</span></div>
+      <div class="row"><span>Sistemas</span><span>BTP ABAP Environment, S/4HANA</span></div>
+      <div class="row"><span>Formación</span><span>Másteres ABAP Cloud, Logali Group</span></div>
+      <div class="row"><span>Código</span><span><a href="https://github.com/abelg02">github.com/abelg02</a></span></div>
+    </aside>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Herramientas</p>
+      <h2>Para los problemas que aparecen cada semana</h2>
+      <p>Gratis, sin registro y sin instalar nada.</p>
+    </div>
+    <div class="grid grid-3">
+      <a class="card card-link" href="herramientas/cleancore-check.html">
+        <div class="meta">Análisis de código</div>
+        <h3>CleanCore Check</h3>
+        <p class="muted">Elige tu sistema (ECC, S/4HANA on-premise, Private o Public Edition, BTP) y descubre qué no compila, qué se rompe al migrar, qué es lento y qué es inseguro.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="herramientas/dumps.html">
+        <div class="meta">Errores de ejecución</div>
+        <h3>Explicador de dumps ST22</h3>
+        <p class="muted">Pega el dump y entiende qué ha pasado, por qué suele pasar y cómo se corrige en código.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="herramientas/sql.html">
+        <div class="meta">Open SQL</div>
+        <h3>Conversor a sintaxis estricta</h3>
+        <p class="muted">Tus SELECT antiguos con @, comas y FIELDS, listos para ABAP Cloud, con avisos de rendimiento.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="herramientas/generadores.html">
+        <div class="meta">Generadores</div>
+        <h3>RAP, ALV, tests y excepciones</h3>
+        <p class="muted">BO RAP con draft, report ALV completo, esqueleto de tests ABAP Unit, clase de excepción T100 y tipos desde JSON.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="herramientas/referencia.html">
+        <div class="meta">Consulta</div>
+        <h3>Referencia ABAP</h3>
+        <p class="muted">Transacciones, funciones y BAPIs con su sustituto en ABAP Cloud, y tablas con su vista CDS liberada.</p>
+        <span class="more">Abrir →</span>
+      </a>
+      <a class="card card-link" href="herramientas/formateador.html">
+        <div class="meta">Utilidades</div>
+        <h3>Formateador y fechas</h3>
+        <p class="muted">Pretty Printer en el navegador y conversor de timestamps, DATS y zonas horarias con su código ABAP.</p>
+        <span class="more">Abrir →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="evolucion">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Ejemplo real de trabajo</p>
+      <h2>De un report de 2009 a ABAP Cloud, en cuatro pasos</h2>
+      <p>Un listado de pedidos de compra como los que hay en casi todos los sistemas. Desplázate para ver cómo cambia el mismo código.</p>
+    </div>
+
+    <div class="evolution">
+      <div class="evolution-steps">
+        <div class="step" data-code="evo-1" data-file="ZR_PEDIDOS_PENDIENTES.prog.abap" data-badge="Legacy" data-color="red"
+             data-foot="<span>CleanCore Check: <b>56/100 · 18 hallazgos</b></span><span>Consultas: <b>1 + 2 por posición</b></span>">
+          <div class="num">01 · Punto de partida</div>
+          <h3>Tabla con cabecera, SELECT dentro del bucle y SELECT *</h3>
+          <p>Funciona, pero con 5.000 posiciones lanza más de 10.000 consultas a la base de datos. Y no compila en ABAP Cloud: tabla con cabecera, TABLES y acceso directo a EKKO, EKPO, LFA1 y MAKT.</p>
+        </div>
+        <div class="step" data-code="evo-2" data-file="ZR_PEDIDOS_PENDIENTES.prog.abap" data-badge="ABAP 7.5x" data-color="amber"
+             data-foot="<span>CleanCore Check: <b>88/100 · 3 hallazgos</b></span><span>Consultas: <b>3 en total</b></span>">
+          <div class="num">02 · Sintaxis moderna</div>
+          <h3>Declaraciones en línea, SQL estricto y lectura en bloque</h3>
+          <p>Las consultas se hacen antes del bucle y los nombres se buscan en una tabla HASHED. Mismo resultado, una fracción del tiempo. Es el paso que se puede dar en cualquier ECC con 7.40 o superior.</p>
+        </div>
+        <div class="step" data-code="evo-3" data-file="ZR_PEDIDOS_PENDIENTES.prog.abap" data-badge="SQL push-down" data-color="blue"
+             data-foot="<span>CleanCore Check: <b>94/100 · 1 hallazgo</b></span><span>Consultas: <b>1</b></span>">
+          <div class="num">03 · Que trabaje la base de datos</div>
+          <h3>Una sola consulta con JOIN</h3>
+          <p>HANA resuelve el cruce de pedidos, proveedores y textos en una única SELECT. El bucle de ABAP desaparece. En S/4HANA on-premise ya no hay nada que corregir; para ABAP Cloud solo queda un problema: siguen siendo tablas de SAP.</p>
+        </div>
+        <div class="step" data-code="evo-4" data-file="ZC_PURCHASEORDERPENDING.ddls.asddls" data-badge="Clean core" data-color="green"
+             data-foot="<span>Objetos usados: <b>solo vistas released</b></span><span>Consultas: <b>1, desde Fiori</b></span>">
+          <div class="num">04 · ABAP Cloud</div>
+          <h3>Vista CDS sobre APIs liberadas</h3>
+          <p>En lugar de leer tablas de SAP, la vista se apoya en I_PurchaseOrderItemAPI01 e I_Supplier, que SAP se compromete a mantener estables. Con anotaciones UI se convierte en una app Fiori sin escribir pantalla.</p>
+        </div>
+      </div>
+
+      <div class="evolution-code">
+        <div class="code-window">
+          <div class="bar"><span id="evo-file">ZR_PEDIDOS_PENDIENTES.prog.abap</span><span id="evo-badge" class="badge badge-red">Legacy</span></div>
+          <pre id="evo-code"></pre>
+          <div class="foot" id="evo-foot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="text/plain" id="evo-1">
+TABLES: ekko.
+DATA: it_ekpo TYPE TABLE OF ekpo WITH HEADER LINE,
+      wa_ekko TYPE ekko.
+
+SELECT * FROM ekko INTO wa_ekko
+  WHERE bukrs IN s_bukrs.
+
+  SELECT * FROM ekpo INTO TABLE it_ekpo
+    WHERE ebeln = wa_ekko-ebeln
+      AND elikz = space.
+
+  LOOP AT it_ekpo.
+    SELECT SINGLE name1 FROM lfa1
+      INTO it_pedidos-name1
+      WHERE lifnr = wa_ekko-lifnr.
+    SELECT SINGLE maktx FROM makt
+      INTO it_pedidos-maktx
+      WHERE matnr = it_ekpo-matnr
+        AND spras = sy-langu.
+    MOVE-CORRESPONDING it_ekpo TO it_pedidos.
+    APPEND it_pedidos.
+  ENDLOOP.
+ENDSELECT.
+</script>
+
+<script type="text/plain" id="evo-2">
+SELECT FROM ekko
+  FIELDS ebeln, lifnr
+  WHERE bukrs IN @s_bukrs
+  INTO TABLE @DATA(lt_ekko).
+CHECK lt_ekko IS NOT INITIAL.
+
+SELECT FROM ekpo
+  FIELDS ebeln, ebelp, matnr, menge, netwr
+  FOR ALL ENTRIES IN @lt_ekko
+  WHERE ebeln = @lt_ekko-ebeln AND elikz = @abap_false
+  INTO TABLE @DATA(lt_ekpo).
+
+DATA lt_names TYPE HASHED TABLE OF ty_name WITH UNIQUE KEY lifnr.
+SELECT FROM lfa1 FIELDS lifnr, name1
+  FOR ALL ENTRIES IN @lt_ekko WHERE lifnr = @lt_ekko-lifnr
+  INTO TABLE @lt_names.
+
+rt_result = VALUE #( FOR ls_pos IN lt_ekpo
+  LET ls_head = lt_ekko[ ebeln = ls_pos-ebeln ] IN
+  ( CORRESPONDING #( ls_pos )
+    lifnr = ls_head-lifnr
+    name1 = VALUE #( lt_names[ lifnr = ls_head-lifnr ]-name1 OPTIONAL ) ) ).
+</script>
+
+<script type="text/plain" id="evo-3">
+SELECT FROM ekko AS h
+  INNER JOIN ekpo AS p
+    ON p~ebeln = h~ebeln
+  LEFT OUTER JOIN lfa1 AS s
+    ON s~lifnr = h~lifnr
+  LEFT OUTER JOIN makt AS t
+    ON  t~matnr = p~matnr
+    AND t~spras = @sy-langu
+  FIELDS h~ebeln, p~ebelp, h~lifnr, s~name1,
+         p~matnr, t~maktx, p~menge, p~netwr
+  WHERE h~bukrs IN @s_bukrs
+    AND p~elikz = @abap_false
+  ORDER BY h~ebeln, p~ebelp
+  INTO TABLE @DATA(lt_result).
+</script>
+
+<script type="text/plain" id="evo-4">
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Posiciones de pedido pendientes'
+define view entity ZC_PurchaseOrderPending
+  as select from I_PurchaseOrderItemAPI01 as Item
+  association [1..1] to I_Supplier as _Supplier
+    on $projection.Supplier = _Supplier.Supplier
+{
+  key Item.PurchaseOrder,
+  key Item.PurchaseOrderItem,
+      Item._PurchaseOrder.Supplier as Supplier,
+      _Supplier.SupplierName,
+      Item.Material,
+      Item.PurchaseOrderItemText,
+      @Semantics.quantity.unitOfMeasure: 'Unit'
+      Item.OrderQuantity,
+      Item.PurchaseOrderQuantityUnit as Unit,
+      Item.CompanyCode
+}
+where Item.IsCompletelyDelivered = ''
+</script>
+
+<section class="section">
+  <div class="wrap project-feature">
+    <div>
+      <p class="eyebrow">Proyecto destacado</p>
+      <h2>Gestión de Incidencias con RAP</h2>
+      <p class="muted">Proyecto final del Máster ABAP Cloud de Avanzado a Experto. Una aplicación Fiori completa para registrar incidencias, asignarlas y seguir su historial de estados, construida con el modelo RAP gestionado y draft.</p>
+      <dl class="kv">
+        <dt>Modelo</dt><dd>Entidad raíz con composición al historial</dd>
+        <dt>Comportamiento</dt><dd>managed, strict(2), with draft, ETag</dd>
+        <dt>Lógica</dt><dd>2 determinaciones, 3 validaciones, acción con parámetro</dd>
+        <dt>Reglas</dt><dd>Transiciones de estado controladas y autorización por responsable</dd>
+        <dt>Interfaz</dt><dd>Fiori Elements sobre OData V4</dd>
+        <dt>Código</dt><dd>Versionado con abapGit en GitHub</dd>
+      </dl>
+      <p>
+        <a class="btn" href="proyectos/gestion-incidencias.html">Leer el caso completo</a>
+        <a class="btn btn-secondary" href="https://github.com/abelg02/ABAP_Cloud_AE/tree/main/src/zabap_abel_ae_incident">Código en GitHub</a>
+      </p>
+    </div>
+    <figure class="figure" style="margin:0">
+      <img src="img/arquitectura-rap.svg" alt="Capas del proyecto: tablas, entidad raíz, proyección, servicio y Fiori Elements, con el comportamiento a la derecha" width="760" height="520">
+      <figcaption>Capas del Business Object y objetos que intervienen en cada una.</figcaption>
+    </figure>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="wrap project-feature">
+    <div>
+      <p class="eyebrow">ABAP Toolkit · descarga gratuita</p>
+      <h2>Clases que no tendrías que escribir otra vez</h2>
+      <p class="muted">Application log, email, cliente REST, JSON, Excel, Application Jobs, mensajes RAP, ALV, BAPIs, textos largos y una plantilla de BO RAP completa. Código abierto (MIT). Un paquete para ABAP Cloud y otro para ECC y S/4HANA on-premise, instalables con abapGit.</p>
+      <ul class="check-list">
+        <li>20 objetos documentados, con ejemplos de uso en la cabecera</li>
+        <li>Solo APIs liberadas en el paquete Cloud</li>
+        <li>Tests unitarios incluidos</li>
+      </ul>
+      <a class="btn" href="biblioteca.html">Ver y descargar gratis</a>
+    </div>
+<pre class="abap"><code><span class="k">DATA</span>(lo_log) = zcl_abk_log=&gt;create(
+                 iv_object    = <span class="s">'ZPURCHASE'</span>
+                 iv_subobject = <span class="s">'IMPORT'</span> ).
+
+<span class="k">TRY</span>.
+    <span class="k">DATA</span>(ls_resp) = zcl_abk_http=&gt;for_comm_arrangement(
+                      iv_scenario = <span class="s">'Z_SUPPLIER_API'</span>
+                      iv_service  = <span class="s">'Z_SUPPLIER_REST'</span> )-&gt;get( ).
+    lo_log-&gt;info( <span class="s">|HTTP { ls_resp-status }|</span> ).
+  <span class="k">CATCH</span> cx_web_http_client_error cx_http_dest_provider_error <span class="k">INTO</span> <span class="k">DATA</span>(lx).
+    lo_log-&gt;exception( lx ).
+<span class="k">ENDTRY</span>.
+
+lo_log-&gt;save( ).</code></pre>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Blog técnico</p>
+      <h2>Artículos</h2>
+    </div>
+    <div class="post-list">
+      <a class="post-item" href="blog/select-dentro-de-loop.html">
+        <span class="muted small">9 min de lectura</span>
+        <div><h3>El SELECT dentro del LOOP: cómo encontrarlo y tres formas de quitarlo</h3><p>FOR ALL ENTRIES, JOIN y vistas CDS, con lo que gana cada una y cuándo no merece la pena.</p></div>
+      </a>
+      <a class="post-item" href="blog/clean-core-para-desarrolladores.html">
+        <span class="muted small">7 min de lectura</span>
+        <div><h3>Clean core explicado para desarrolladores ABAP</h3><p>Qué cambia en el día a día: objetos liberados, niveles de extensibilidad y qué hacer con el código Z existente.</p></div>
+      </a>
+      <a class="post-item" href="blog/rap-validaciones-y-acciones.html">
+        <span class="muted small">10 min de lectura</span>
+        <div><h3>RAP: validaciones, determinaciones y acciones sin sorpresas</h3><p>Cuándo se ejecuta cada una, cómo marcar el campo erróneo en Fiori y el error de la numeración con MAX + 1.</p></div>
+      </a>
+    </div>
+    <p style="margin-top:20px"><a href="blog/index.html">Todos los artículos →</a></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Formación</p>
+      <h2>Certificaciones</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card cert">
+        <div class="cert-hours"><div><b>300</b>horas</div></div>
+        <div><h3>Máster SAP ABAP Cloud: de Avanzado a Experto</h3><p class="muted small">Logali Group · junio 2026<br>POO, CDS avanzado, RAP, EML, extensibilidad S/4HANA Cloud y Private Edition, side-by-side.</p></div>
+      </div>
+      <div class="card cert">
+        <div class="cert-hours"><div><b>300</b>horas</div></div>
+        <div><h3>Máster SAP ABAP Cloud I: de cero a avanzado</h3><p class="muted small">Logali Group · enero 2026<br>Lenguaje, tablas internas, diccionario, ABAP SQL, push-down, ATC y abapGit.</p></div>
+      </div>
+      <div class="card cert">
+        <div class="cert-hours"><div><b>50</b>horas</div></div>
+        <div><h3>SAP ABAP: iniciación a la programación</h3><p class="muted small">Logali Group · enero 2026<br>Fundamentos del lenguaje y del entorno de desarrollo.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap">
+    <div>
+      <h2 style="margin-bottom:6px">¿Tienes un programa Z a medio migrar?</h2>
+      <p class="muted" style="margin:0">Pégalo en CleanCore Check, elige tu sistema y en un segundo sabrás qué tocar. Gratis y sin que el código salga de tu ordenador.</p>
+    </div>
+    <a class="btn" href="herramientas/cleancore-check.html">Analizar mi código</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="herramientas/generadores.html">Generadores</a></li>
+          <li><a href="herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="blog/index.html">Blog</a></li>
+          <li><a href="recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/abap-highlight.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>

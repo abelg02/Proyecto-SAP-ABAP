@@ -1,0 +1,4 @@
+@EndUserText.label: '{{DESCRIPCION}} - servicio'
+define service {{SERVICE}} {
+  expose {{C_VIEW}} as {{ALIAS}};
+}

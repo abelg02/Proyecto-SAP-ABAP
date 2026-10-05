@@ -1,0 +1,16 @@
+node_modules/
+
+# Material personal: borradores de LinkedIn, notas de publicación y vídeos para redes
+linkedin/
+PUBLICAR.md
+NOTAS.md
+marketing/video/*.mp4
+marketing/video/*.m4a
+
+# Generado por los scripts (se vuelve a crear con npm run capturas / npm run empaquetar)
+scripts/capturas/
+dist/
+
+.env
+.env.*
+.DS_Store

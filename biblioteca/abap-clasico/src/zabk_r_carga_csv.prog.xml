@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_PROG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <PROGDIR>
+    <NAME>ZABK_R_CARGA_CSV</NAME>
+    <SUBC>1</SUBC>
+    <RLOAD>S</RLOAD>
+    <FIXPT>X</FIXPT>
+    <UQUAL>X</UQUAL>
+   </PROGDIR>
+   <TPOOL>
+     <item>
+      <ID>R</ID>
+      <ENTRY>Carga de textos de material desde CSV</ENTRY>
+      <LENGTH>37</LENGTH>
+     </item>
+     <item>
+      <ID>I</ID>
+      <KEY>B01</KEY>
+      <ENTRY>Origen del fichero</ENTRY>
+      <LENGTH>20</LENGTH>
+     </item>
+     <item>
+      <ID>S</ID>
+      <KEY>P_PC</KEY>
+      <ENTRY>Fichero en el PC</ENTRY>
+      <LENGTH>24</LENGTH>
+     </item>
+     <item>
+      <ID>S</ID>
+      <KEY>P_SERV</KEY>
+      <ENTRY>Fichero en el servidor</ENTRY>
+      <LENGTH>30</LENGTH>
+     </item>
+     <item>
+      <ID>S</ID>
+      <KEY>P_PATH</KEY>
+      <ENTRY>Ruta del fichero</ENTRY>
+      <LENGTH>24</LENGTH>
+     </item>
+     <item>
+      <ID>S</ID>
+      <KEY>P_TEST</KEY>
+      <ENTRY>Modo test (sin grabar)</ENTRY>
+      <LENGTH>30</LENGTH>
+     </item>
+   </TPOOL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

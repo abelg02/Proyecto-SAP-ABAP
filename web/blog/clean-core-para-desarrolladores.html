@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clean core explicado para desarrolladores ABAP · Abel González Guerra</title>
+<meta name="description" content="Qué significa clean core en el día a día de un desarrollador ABAP: objetos liberados, ABAP Cloud, niveles de extensibilidad y qué hacer con el código Z existente.">
+<meta name="author" content="Abel González Guerra">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Clean core explicado para desarrolladores ABAP · Abel González Guerra">
+<meta property="og:description" content="Qué significa clean core en el día a día de un desarrollador ABAP: objetos liberados, ABAP Cloud, niveles de extensibilidad y qué hacer con el código Z existente.">
+<meta property="og:image" content="https://abelg02.github.io/Proyecto-SAP-ABAP/img/og.png">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">AG</span>
+      <span class="brand-name">Abel González Guerra<span>Desarrollador SAP ABAP</span></span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menú</button>
+    <nav class="nav" id="nav">
+        <a href="../herramientas/index.html">Herramientas</a>
+        <a href="../biblioteca.html">Biblioteca</a>
+        <a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a>
+        <a href="../blog/index.html" class="active" aria-current="page">Blog</a>
+        <a href="../recursos.html">Recursos</a>
+        <a href="../sobre-mi.html">Sobre mí</a>
+        <a class="btn btn-small" href="https://github.com/abelg02" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Blog</a> / S/4HANA</div>
+    <h1 style="max-width:820px">Clean core explicado para desarrolladores ABAP</h1>
+    <p class="article-meta">Abel González Guerra · 7 min de lectura</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px">
+  <div class="wrap article">
+    <p>"Clean core" aparece en todas las presentaciones de SAP desde hace unos años y suele explicarse con diagramas de arquitectura. Para quien escribe código, la idea se resume en una frase: <strong>tus desarrollos solo pueden usar lo que SAP se compromete a no romper</strong>.</p>
+
+    <h2>El problema que intenta resolver</h2>
+    <p>En un ECC típico, los desarrollos Z leen directamente tablas de SAP, llaman a módulos de función internos, modifican objetos estándar y usan user exits. Todo eso funciona hasta que SAP cambia algo por dentro. Por eso cada actualización de versión es un proyecto: hay que revisar qué se ha roto.</p>
+    <p>En S/4HANA Cloud Public Edition, SAP actualiza el sistema varias veces al año y no puede esperar a que cada cliente revise su código. La solución es un contrato: SAP marca ciertos objetos como <strong>liberados (released)</strong> y garantiza que seguirán funcionando. Tu código solo puede usar esos.</p>
+
+    <h2>ABAP Cloud: el lenguaje con el contrato aplicado</h2>
+    <p>ABAP Cloud no es otro lenguaje. Es ABAP con dos restricciones que el compilador comprueba:</p>
+    <ul>
+      <li><strong>Lenguaje restringido.</strong> Desaparece lo ligado a SAP GUI y al sistema operativo: <code>WRITE</code>, dynpros, pantallas de selección, <code>CALL TRANSACTION</code>, <code>SUBMIT</code>, ficheros del servidor, <code>EXEC SQL</code>, la memoria ABAP.</li>
+      <li><strong>Solo objetos liberados.</strong> Tablas, vistas, clases y funciones de SAP solo se pueden usar si tienen contrato de liberación. <code>MARA</code> no; <code>I_Product</code> sí.</li>
+    </ul>
+    <p>En BTP ABAP Environment y en S/4HANA Cloud Public Edition no hay alternativa. En S/4HANA on-premise y Private Edition se elige por paquete: el paquete se marca con versión de lenguaje "ABAP for Cloud Development" y a partir de ahí el compilador aplica las reglas.</p>
+
+    <h2>Lo que cambia al escribir código</h2>
+    <table>
+      <thead><tr><th>Antes</th><th>En ABAP Cloud</th></tr></thead>
+      <tbody>
+        <tr><td><code>SELECT FROM mara</code></td><td><code>SELECT FROM I_Product</code></td></tr>
+        <tr><td><code>sy-datum</code>, <code>sy-uname</code></td><td><code>cl_abap_context_info=>get_system_date( )</code>, <code>get_user_technical_name( )</code></td></tr>
+        <tr><td><code>BAPI_PO_CREATE1</code></td><td>EML sobre el BO liberado <code>I_PurchaseOrderTP_2</code></td></tr>
+        <tr><td>Report con ALV</td><td>Vista CDS + app Fiori Elements</td></tr>
+        <tr><td>Report en fondo (SM36)</td><td>Application Job</td></tr>
+        <tr><td><code>BAL_LOG_CREATE</code></td><td><code>cl_bali_log</code></td></tr>
+        <tr><td><code>SO_NEW_DOCUMENT_ATT_SEND_API1</code></td><td><code>cl_bcs_mail_message</code></td></tr>
+        <tr><td>User exit, modificación</td><td>BAdI liberada, extensión de BO RAP, campos personalizados</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Los niveles de extensibilidad</h2>
+    <p>SAP organiza las extensiones por niveles según lo "limpias" que son:</p>
+    <ul>
+      <li><strong>Nivel A.</strong> ABAP Cloud puro: solo APIs liberadas. Es el objetivo para todo lo nuevo.</li>
+      <li><strong>Nivel B.</strong> ABAP clásico usando APIs clásicas que SAP considera estables (por ejemplo, BAPIs documentadas), sin modificar el estándar. Aceptable en Private Edition y on-premise.</li>
+      <li><strong>Nivel C.</strong> Uso de objetos internos de SAP no liberados. Funciona, pero hay que revisarlo en cada actualización.</li>
+      <li><strong>Nivel D.</strong> Modificaciones del estándar, implementaciones implícitas, objetos que SAP desaconseja. Es lo que hay que ir eliminando.</li>
+    </ul>
+
+    <h2>¿Y el código Z que ya existe?</h2>
+    <p>Nadie reescribe diez mil programas de golpe. El enfoque razonable es:</p>
+    <ol>
+      <li><strong>Medir.</strong> Ejecutar el ATC con la variante de S/4HANA (y, si se quiere ir más lejos, con <code>ABAP_CLOUD_READINESS</code>) y cruzar el resultado con el uso real de cada programa (transacción SUSG o el monitor de uso). Lo que nadie usa se retira.</li>
+      <li><strong>Lo nuevo, en ABAP Cloud.</strong> Desde ya, los desarrollos nuevos van en paquetes de ABAP Cloud siempre que las APIs necesarias estén liberadas.</li>
+      <li><strong>Lo que se toca, se moderniza.</strong> Cuando hay que modificar un programa antiguo, se aprovecha para quitar sintaxis obsoleta y accesos directos a tablas, aunque siga siendo ABAP clásico.</li>
+      <li><strong>Envolver lo que falta.</strong> Si una funcionalidad no tiene API liberada todavía, se encapsula en una clase en un paquete clásico con una interfaz limpia, liberada para uso propio (contrato C1 de cliente). Cuando SAP libere la API, solo cambia esa clase.</li>
+    </ol>
+
+    <h2>Cómo saber si un objeto está liberado</h2>
+    <ul>
+      <li>En ADT, la pestaña <strong>Properties > API State</strong> del objeto.</li>
+      <li>En el <strong>SAP Business Accelerator Hub</strong> (api.sap.com), sección de vistas CDS y BO de RAP.</li>
+      <li>En el <strong>Cloudification Repository</strong> en GitHub, que además indica el sucesor recomendado de cada objeto no liberado.</li>
+    </ul>
+
+    <div class="callout">Para una primera foto rápida de un programa concreto, sin tener todavía el sistema S/4HANA, puedes usar <a href="../herramientas/cleancore-check.html">CleanCore Check</a> con el destino "ABAP Cloud": marca las tablas de SAP con su vista liberada equivalente y las funciones con su sustituta.</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <strong>Abel González Guerra</strong>
+        <p class="muted" style="margin-top:6px;max-width:340px">Herramientas gratuitas, código y artículos para desarrolladores SAP ABAP: ABAP Cloud, RAP, CDS y migración a S/4HANA. Todo funciona en tu navegador.</p>
+      </div>
+      <div>
+        <h4>Herramientas</h4>
+        <ul>
+          <li><a href="../herramientas/cleancore-check.html">CleanCore Check</a></li>
+          <li><a href="../herramientas/dumps.html">Explicador de dumps</a></li>
+          <li><a href="../herramientas/sql.html">Conversor de SQL</a></li>
+          <li><a href="../herramientas/generadores.html">Generadores</a></li>
+          <li><a href="../herramientas/index.html">Todas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aprender</h4>
+        <ul>
+          <li><a href="../biblioteca.html">ABAP Toolkit</a></li>
+          <li><a href="../proyectos/gestion-incidencias.html">Proyecto RAP</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../recursos.html">Chuleta y recursos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Código</h4>
+        <ul>
+          <li><a href="https://github.com/abelg02" rel="noopener">GitHub</a></li>
+          <li><a href="../sobre-mi.html">Sobre mí</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abel González Guerra · Uso gratuito</span>
+      <span><a href="../legal.html">Aviso legal y privacidad</a> · SAP, ABAP, S/4HANA y BTP son marcas de SAP SE. Este sitio no está afiliado a SAP.</span>
+    </div>
+  </div>
+</footer>
+
+
+<script src="../js/site.js"></script>
+</body>
+</html>

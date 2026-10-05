@@ -1,0 +1,59 @@
+<!-- {"title": "Conversor de timestamps y fechas ABAP", "description": "Convierte timestamps ABAP (TIMESTAMP, TIMESTAMPL), fechas DATS y horas TIMS, Unix e ISO 8601 entre zonas horarias, con el código ABAP equivalente. Calculadora de días naturales y laborables.", "out": "herramientas/fechas.html", "nav": "herramientas", "styles": ["css/tool.css"], "scripts": ["js/abap-highlight.js", "js/fechas-ui.js"]} -->
+
+<section class="tool-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Herramientas</a> / Timestamps y fechas</div>
+    <h1>Conversor de timestamps y fechas ABAP</h1>
+    <p>Pega el valor de un campo de timestamp (por ejemplo <code>LAST_CHANGED_AT</code> en una tabla RAP) y míralo en fecha y hora de tu zona. También al revés, y con el código ABAP para hacerlo en el programa.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:28px">
+  <div class="wrap grid grid-2" style="align-items:start">
+    <div style="min-width:0">
+      <div class="card form">
+        <div><label for="ts-in">Valor</label><input id="ts-in" style="font-family:var(--mono)" placeholder="20261005143000 · 20261005 · 05.10.2026 14:30 · 1791210600 · ISO"></div>
+        <div class="row-2">
+          <div>
+            <label for="ts-tz">Zona horaria</label>
+            <select id="ts-tz">
+              <option value="Europe/Madrid" data-sap="CET">Europe/Madrid (CET)</option>
+              <option value="Atlantic/Canary" data-sap="WET">Atlantic/Canary (WET)</option>
+              <option value="Europe/London" data-sap="UK">Europe/London (UK)</option>
+              <option value="Europe/Berlin" data-sap="CET">Europe/Berlin (CET)</option>
+              <option value="America/Mexico_City" data-sap="MEXICO">America/Mexico_City (MEXICO)</option>
+              <option value="America/Bogota" data-sap="UTC-5">America/Bogota (UTC-5)</option>
+              <option value="America/Argentina/Buenos_Aires" data-sap="UTC-3">America/Buenos_Aires (UTC-3)</option>
+              <option value="America/New_York" data-sap="EST">America/New_York (EST)</option>
+              <option value="Asia/Kolkata" data-sap="INDIA">Asia/Kolkata (INDIA)</option>
+              <option value="UTC" data-sap="UTC">UTC</option>
+            </select>
+          </div>
+          <div style="align-self:end"><button class="btn btn-secondary btn-small" id="ts-now" type="button">Ahora mismo</button></div>
+        </div>
+      </div>
+      <table style="margin-top:16px"><tbody id="ts-out"></tbody></table>
+    </div>
+    <div class="code-window" style="min-width:0">
+      <div class="bar"><span>Código ABAP</span></div>
+      <pre id="ts-code"></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <h2>Calculadora de días</h2>
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card form">
+        <div class="row-2">
+          <div><label for="d-from">Fecha inicial</label><input id="d-from" placeholder="05.10.2026 o 20261005"></div>
+          <div><label for="d-to">Fecha final (opcional)</label><input id="d-to" placeholder="31.12.2026"></div>
+        </div>
+        <div><label for="d-add">Sumar o restar días</label><input id="d-add" type="number" value="30"></div>
+      </div>
+      <table><tbody id="d-out"></tbody></table>
+    </div>
+    <p class="small muted">Los días laborables cuentan de lunes a viernes, sin festivos. En ABAP, para días laborables reales usa el calendario de fábrica (DATE_CONVERT_TO_FACTORYDATE, o <code>cl_scal_api</code> en ABAP Cloud).</p>
+  </div>
+</section>
