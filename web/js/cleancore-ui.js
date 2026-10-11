@@ -348,4 +348,22 @@
   // ?ejemplo=legacy|s4|security en la URL carga ese ejemplo (enlaces desde el blog)
   const m = location.search.match(/[?&]ejemplo(?:=(\w+))?/);
   if (m) loadExample(EXAMPLES[m[1]] ? m[1] : 'legacy');
+
+  // #codigo=...&nombre=...&sistema=... lo envía la extensión CleanCore para GitHub.
+  // Va en el fragmento (#), que el navegador nunca manda al servidor, y se borra de la dirección al leerlo.
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('codigo')) {
+    try {
+      const b64 = h.get('codigo').replace(/-/g, '+').replace(/_/g, '/');
+      const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      src.value = new TextDecoder().decode(bytes);
+      state.fileName = h.get('nombre') || '';
+      state.files = [];
+      $('editor-name').textContent = state.fileName || 'Código desde GitHub';
+      if (TARGETS[h.get('sistema')]) { targetSel.value = h.get('sistema'); showNote(); }
+      updateGutter();
+      run();
+    } catch (e) { /* enlace incompleto: se ignora */ }
+    history.replaceState(null, '', location.pathname + location.search);
+  }
 })();
