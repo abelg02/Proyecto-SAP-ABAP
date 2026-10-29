@@ -33,6 +33,20 @@
     if (src.value.trim()) run();
   });
 
+  /* ------------------ Lista oficial de objetos liberados de SAP ------------------ */
+  // Cloudification Repository de SAP, compactado en datos/sap-apis.json y actualizado cada semana.
+  // Si no carga, el análisis sigue funcionando con las listas internas del motor.
+  const sapNote = $('sap-list-note');
+  fetch('../datos/sap-apis.json')
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      window.CleanCore.setSapList(data);
+      const m = data.meta || {};
+      if (sapNote) sapNote.innerHTML = `Estado de tablas, funciones y clases de SAP según la lista oficial de SAP: <a href="https://github.com/SAP/abap-atc-cr-cv-s4hc" rel="noopener">Cloudification Repository</a> (${Number(m.objetos || 0).toLocaleString('es-ES')} objetos, versión ${esc(m.commit || m.generado || '')}, © SAP SE, licencia Apache 2.0).`;
+      if (src.value.trim()) run();
+    })
+    .catch(() => { if (sapNote) sapNote.textContent = 'No se ha podido cargar la lista oficial de SAP: se usan las listas internas de la herramienta.'; });
+
   /* --------------------------------- Editor --------------------------------- */
   function updateGutter() {
     const n = src.value.split('\n').length;

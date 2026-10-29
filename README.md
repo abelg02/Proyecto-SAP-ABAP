@@ -50,6 +50,10 @@ En [`biblioteca/`](biblioteca/) hay 20 objetos y una plantilla RAP managed con d
 - 0 enlaces rotos (`npm run enlaces`) y 0 datos personales o secretos en lo que se publica (`npm run privacidad`).
 - GitHub Actions pasa los tests, los enlaces y la privacidad antes de cada publicación.
 
+## Datos de terceros
+
+CleanCore Check comprueba el estado de tablas, funciones y clases de SAP con el [Cloudification Repository](https://github.com/SAP/abap-atc-cr-cv-s4hc) de SAP, la misma lista que usa el ATC. `web/datos/sap-apis.json` es una versión compactada que GitHub Actions actualiza cada lunes (`npm run sap`). © SAP SE or an SAP affiliate company and project contributors, licencia Apache 2.0. Detalle en [NOTICE](NOTICE).
+
 ## Estructura
 
 | Carpeta | Contenido |

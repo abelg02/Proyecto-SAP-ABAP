@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "node web-fuente/build.mjs",
-    "test": "node scripts/tests/test-motor.mjs && node scripts/tests/test-sql.mjs",
+    "test": "node scripts/tests/test-motor.mjs && node scripts/tests/test-lista-sap.mjs && node scripts/tests/test-sql.mjs",
+    "sap": "node scripts/actualizar-sap.mjs",
     "enlaces": "node scripts/comprobar-enlaces.mjs",
     "pdf": "node documentos/generar-pdf.mjs",
     "graficos": "node marketing/graficos.mjs",
